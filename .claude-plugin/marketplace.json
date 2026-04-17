@@ -1,0 +1,20 @@
+{
+  "name": "yuval-marketplace",
+  "owner": {
+    "name": "Yuval Lavi"
+  },
+  "description": "Personal marketplace of plugins, skills, and commands for working with Claude across Cowork and Claude Code.",
+  "plugins": [
+    {
+      "name": "yuval-core",
+      "source": "./plugins/yuval-core",
+      "description": "Core workspace plugin: project scaffolding (init), wiki discipline, and persona management.",
+      "version": "0.1.0",
+      "author": {
+        "name": "Yuval Lavi"
+      },
+      "category": "productivity",
+      "keywords": ["init", "workspace", "wiki", "karpathy", "persona"]
+    }
+  ]
+}
