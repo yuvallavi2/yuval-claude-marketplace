@@ -8,21 +8,19 @@ Core workspace plugin for Yuval's Claude setup.
 
 ## How it reads the marketplace
 
-The `init` skill reads two files at runtime from `~/claude-marketplace/templates/`:
+The `init` skill reads two files bundled with the skill at `skills/init/references/`:
 
 - `claude-template.md` — the project CLAUDE.md template
 - `persona.md` — the persona block that gets injected into `CLAUDE.md`
 
-This lets you edit the template or persona in one place, and every future `init` picks up the change.
-
-If either file is missing, `init` falls back to the bundled copy (`skills/init/references/claude-template.md`) and warns in the final confirmation.
+Edits happen in the plugin's git repo; updates propagate through normal plugin updates. If either file is missing at runtime, `init` treats it as a broken install and stops.
 
 ## Planned additions
 
 - `llm-wiki` skill — owns `ingest`, `query`, `lint` operations over `/wiki/`
 - `init-code` command — scaffolds the `code/` git repo when a project moves to implementation
 - `promote-to-code` command — moves an `output/` doc into `code/wiki/` as an ADR
-- `refresh-persona` command — re-syncs the persona block in an existing project's `CLAUDE.md` from `~/claude-marketplace/templates/persona.md`
+- `refresh-persona` command — re-syncs the persona block in an existing project's `CLAUDE.md` from the skill's bundled `persona.md`
 
 ## Install
 

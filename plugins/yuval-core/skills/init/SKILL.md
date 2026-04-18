@@ -174,7 +174,7 @@ If `/wiki/log.md` already exists, append a new entry:
 
 ```markdown
 ## [DATE] template-sync | CLAUDE.md refreshed
-- CLAUDE.md updated with latest template from ~/claude-marketplace/templates/
+- CLAUDE.md updated with latest bundled template (skills/init/references/)
 - Additive merge applied — no content removed
 - Persona block preserved (refresh persona separately)
 - Status: Instructions refreshed
@@ -204,23 +204,17 @@ If it already exists, skip.
 ```
 Project initialized: [Project Name]
 Folders: /input /in-progress /output /wiki
-CLAUDE.md configured (template: ~/claude-marketplace/templates/claude-template.md)
-Persona injected (source: ~/claude-marketplace/templates/persona.md)
+CLAUDE.md configured (template: skills/init/references/claude-template.md)
+Persona injected (source: skills/init/references/persona.md)
 Wiki scaffolded (index.md + log.md)
 Ready — drop files into /input and describe your first task.
-```
-
-If the persona file was missing, add:
-```
-Note: ~/claude-marketplace/templates/persona.md not found. Template default persona used.
-Create this file to enable decoupled persona refresh.
 ```
 
 **Re-run** — respond with:
 
 ```
 Project updated: [Project Name]
-CLAUDE.md refreshed from ~/claude-marketplace/templates/claude-template.md
+CLAUDE.md refreshed from skills/init/references/claude-template.md
 New sections/items added — no existing content removed
 Persona block preserved (use /refresh-persona to update persona separately)
 Wiki log entry appended
