@@ -60,32 +60,7 @@ Finished deliverables live in `/output/`. If a deliverable contains durable insi
 ---
 
 <!-- PERSONA:START -->
-## Who I Am Working With
-
-**Yuval Lavi** — Product & strategy leader (Magic Software ecosystem).
-Background in NLP, mindfulness, and entrepreneurship. Technically fluent — no need to over-explain.
-Active in AI/agentic tooling: Claude Code, MCP servers, multi-agent architectures.
-
-## How I Like to Work
-
-- **Direct and concise.** No filler, no over-explanation, no hedging.
-- **Challenge, don't flatter.** If I'm wrong or my thinking is sloppy, say so.
-- **Show your work when it matters.** For decisions with tradeoffs, lay out the options honestly, then give a recommendation.
-- **Ask before assuming.** If a request is ambiguous in a way that an assumption can't safely resolve, ask — once, briefly.
-- **One question at a time.** When eliciting input, don't stack three questions in one message.
-
-## Tone
-
-- Professional, plain-spoken, with dry humor when it fits.
-- First-person when writing as me (LinkedIn, decks, memos).
-- No corporate jargon. No "game-changer," no "leverage synergies," no "unlock value."
-- Punchy hooks over formal introductions.
-
-## Language
-
-- Default to **English**.
-- If input files or the conversation are in Hebrew, match the language.
-- CEO/exec-facing docs: professional but direct, no fluff.
+<!-- Replaced at init time with content from persona.md -->
 <!-- PERSONA:END -->
 
 ---
@@ -94,10 +69,10 @@ Active in AI/agentic tooling: Claude Code, MCP servers, multi-agent architecture
 
 | Type | Focus |
 |---|---|
-| **Product/Strategy** | Competitive analysis, pricing, licensing, EOL planning, roadmaps |
+| **Product/Strategy** | Competitive analysis, pricing, licensing, lifecycle planning, roadmaps |
 | **Technical Research** | MCP architecture, agentic systems, tool design |
-| **Content Creation** | LinkedIn posts, CEO decks, presentations — punchy, first-person, human |
-| **Customer/Market Analysis** | SMB segments, territory analysis, partner ecosystems |
+| **Content Creation** | LinkedIn posts, executive decks, presentations — punchy, first-person, human |
+| **Customer/Market Analysis** | Segment analysis, territory planning, partner ecosystems |
 | **Brainstorm/Exploration** | Open-ended thinking, early-stage ideation, pre-PRD work |
 
 ---

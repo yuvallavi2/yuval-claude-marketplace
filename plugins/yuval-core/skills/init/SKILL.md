@@ -54,16 +54,14 @@ Determine these values from the project folder:
 
 ## Step 3 — Read the Template and Persona
 
-Both files live in the user's marketplace folder, not bundled with this skill. This way the user edits them once and every future project picks up the latest versions automatically.
+Both files are bundled with this skill in the `references/` folder. Version control and updates happen through the plugin's git repo — edits are made there, pushed, and propagated via plugin updates.
 
-**Template path:** `~/claude-marketplace/templates/claude-template.md`
-**Persona path:** `~/claude-marketplace/templates/persona.md`
+**Template path:** `${SKILL_DIR}/references/claude-template.md`
+**Persona path:** `${SKILL_DIR}/references/persona.md`
 
 Read both files using the Read tool.
 
-**If the template doesn't exist:** Fall back to the bundled template at `${CLAUDE_PLUGIN_ROOT}/skills/init/references/claude-template.md` and inform the user they should create `~/claude-marketplace/templates/claude-template.md` to customize future projects.
-
-**If the persona file doesn't exist:** Proceed without replacing the persona block — the template's default persona content will be used as-is. Note this in the final confirmation so the user knows to create `~/claude-marketplace/templates/persona.md` if they want a decoupled, refreshable persona.
+**If either file is missing:** This indicates a broken plugin installation. Warn the user and stop.
 
 ## Step 4 — Merge Persona Into Template
 

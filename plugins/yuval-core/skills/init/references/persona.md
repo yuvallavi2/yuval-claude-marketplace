@@ -14,9 +14,9 @@
 
 ## Who I Am Working With
 
-**Yuval Lavi** — Product & strategy leader (Magic Software ecosystem).
+**Yuval Lavi** — Product and strategy leader.
 Background in NLP, mindfulness, and entrepreneurship. Technically fluent — no need to over-explain.
-Active in AI/agentic tooling: Claude Code, MCP servers, multi-agent architectures.
+Active in AI and agentic tooling: Claude Code, MCP servers, multi-agent architectures.
 
 ## How I Like to Work
 
