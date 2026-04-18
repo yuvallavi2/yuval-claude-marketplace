@@ -3,7 +3,7 @@
   "owner": {
     "name": "Yuval Lavi"
   },
-  "description": "Personal marketplace of plugins, skills, and commands for working with Claude across Cowork and Claude Code.",
+  "description": "Yuval Personal marketplace of plugins, skills, and commands for working with Claude across Cowork and Claude Code.",
   "plugins": [
     {
       "name": "yuval-core",
