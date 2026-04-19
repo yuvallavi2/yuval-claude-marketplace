@@ -8,7 +8,7 @@
     {
       "name": "yuval-core",
       "source": "./plugins/yuval-core",
-      "description": "Core workspace plugin: project scaffolding (init), wiki discipline, and persona management.",
+      "description": "Yuval Core workspace plugin: project scaffolding (init), wiki discipline, and persona management.",
       "version": "0.2.1",
       "author": {
         "name": "Yuval Lavi"
