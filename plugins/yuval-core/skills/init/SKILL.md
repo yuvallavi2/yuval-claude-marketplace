@@ -110,9 +110,11 @@ Additive merge. Goal: bring the existing CLAUDE.md up to date with the latest te
 
 ## Step 6 — Scaffold the Wiki
 
-### `/wiki/index.md` (first run only)
+Handle each wiki artifact independently. Each block below specifies its own create/skip/append behavior — **do not treat this step as "first run only."** On a re-run, every block must still be evaluated because older projects may be missing artifacts introduced by later versions of the skill (e.g. `next.md`).
 
-If `/wiki/index.md` does not exist, create it:
+### `/wiki/index.md` — create-if-missing
+
+If `/wiki/index.md` does not exist, create it with the template below. If it already exists, leave it alone — the wiki maintainer owns it.
 
 ```markdown
 # Wiki Index — [PROJECT_NAME]
@@ -145,9 +147,7 @@ _(Unresolved questions to revisit as more sources arrive.)_
 _None yet._
 ```
 
-If it already exists, skip.
-
-### `/wiki/log.md` (first run only)
+### `/wiki/log.md` — create-if-missing, else append
 
 If `/wiki/log.md` does not exist, create it with the init entry:
 
@@ -168,9 +168,22 @@ Append-only chronological record of ingests, queries, lint passes, and sessions.
 - Status: Ready for first task
 ```
 
-### `/wiki/next.md` (first run only)
+If `/wiki/log.md` already exists, append a `template-sync` entry:
 
-If `/wiki/next.md` does not exist, create it with an empty hand-off:
+```markdown
+## [DATE] template-sync | CLAUDE.md refreshed
+- CLAUDE.md updated with latest bundled template (skills/init/references/)
+- Additive merge applied — no content removed
+- Persona block preserved (refresh persona separately)
+- next.md: [created | already present]
+- Status: Instructions refreshed
+```
+
+### `/wiki/next.md` — create-if-missing (applies on re-run too)
+
+**This block must run on every invocation, including re-runs.** Older projects that predate the session continuity contract won't have `next.md`, and the re-run must back-fill it — otherwise the contract defined in CLAUDE.md has nothing to read.
+
+If `/wiki/next.md` does not exist, create it with the empty hand-off below. If it already exists, leave it alone.
 
 ```markdown
 # Next — [PROJECT_NAME]
@@ -190,23 +203,7 @@ _None yet._
 - Last session: init — project scaffolded.
 ```
 
-The session continuity contract is in CLAUDE.md: read `next.md` at session start, overwrite and print it at session end.
-
-### On re-run
-
-If `/wiki/log.md` already exists, append a new entry:
-
-```markdown
-## [DATE] template-sync | CLAUDE.md refreshed
-- CLAUDE.md updated with latest bundled template (skills/init/references/)
-- Additive merge applied — no content removed
-- Persona block preserved (refresh persona separately)
-- Status: Instructions refreshed
-```
-
-If `/wiki/index.md` already exists, leave it alone — it's owned by the wiki maintainer, not init.
-
-On re-run, if `/wiki/next.md` is missing (project predates the session continuity contract), create it using the first-run template above so the contract is in force from here on. If it already exists, leave it alone.
+The session continuity contract itself lives in CLAUDE.md: read `next.md` at session start, overwrite and print it at session end.
 
 ## Step 7 — Create Input README (first run only)
 
