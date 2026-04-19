@@ -164,9 +164,33 @@ Append-only chronological record of ingests, queries, lint passes, and sessions.
 - Folders created: /input /in-progress /output /wiki /wiki/pages
 - CLAUDE.md configured from template
 - Persona injected from persona.md
-- Wiki scaffolded (index.md, log.md)
+- Wiki scaffolded (index.md, log.md, next.md)
 - Status: Ready for first task
 ```
+
+### `/wiki/next.md` (first run only)
+
+If `/wiki/next.md` does not exist, create it with an empty hand-off:
+
+```markdown
+# Next — [PROJECT_NAME]
+
+_Last updated: [DATE]_
+
+## Next action
+Drop source material into `/input/` and describe your first task.
+
+## Why
+Project was just initialized — no work in flight yet.
+
+## Open threads
+_None yet._
+
+## Recent context
+- Last session: init — project scaffolded.
+```
+
+The session continuity contract is in CLAUDE.md: read `next.md` at session start, overwrite and print it at session end.
 
 ### On re-run
 
@@ -181,6 +205,8 @@ If `/wiki/log.md` already exists, append a new entry:
 ```
 
 If `/wiki/index.md` already exists, leave it alone — it's owned by the wiki maintainer, not init.
+
+On re-run, if `/wiki/next.md` is missing (project predates the session continuity contract), create it using the first-run template above so the contract is in force from here on. If it already exists, leave it alone.
 
 ## Step 7 — Create Input README (first run only)
 
@@ -206,7 +232,7 @@ Project initialized: [Project Name]
 Folders: /input /in-progress /output /wiki
 CLAUDE.md configured (template: skills/init/references/claude-template.md)
 Persona injected (source: skills/init/references/persona.md)
-Wiki scaffolded (index.md + log.md)
+Wiki scaffolded (index.md + log.md + next.md)
 Ready — drop files into /input and describe your first task.
 ```
 
@@ -218,4 +244,5 @@ CLAUDE.md refreshed from skills/init/references/claude-template.md
 New sections/items added — no existing content removed
 Persona block preserved (use /refresh-persona to update persona separately)
 Wiki log entry appended
+next.md: [created | already present]
 ```

@@ -22,7 +22,7 @@ Always respect this structure — no exceptions.
 ```
 
 ### Rules
-- **Start every session** by scanning `/input/` for new or updated files, then reading `/wiki/index.md` to orient.
+- **Start every session** by scanning `/input/` for new or updated files, reading `/wiki/index.md` to orient, and reading `/wiki/next.md` to pick up the last session's hand-off.
 - **Never write directly to `/output/`** until the deliverable is complete.
 - **Never delete** files from `/input/` or `/wiki/` without explicit instruction.
 - `/in-progress/` is the only folder the user treats as deletable. Don't put anything there you expect to survive.
@@ -43,6 +43,7 @@ This project uses a persistent wiki (the Karpathy LLM Wiki pattern) as long-term
 
 - `/wiki/index.md` — content catalog, organized by category (Sources, Entities, Concepts, Decisions, Open Questions). Read this first when answering any question.
 - `/wiki/log.md` — append-only chronological record of ingests, queries, and lint passes. Every entry starts with `## [YYYY-MM-DD] operation | title` so it's grep-able.
+- `/wiki/next.md` — single-file session hand-off. Overwritten at the end of each working session, read at the start of the next. Holds the current next action, any open threads, and the one-line context needed to pick up cold.
 - `/wiki/pages/` — individual wiki pages. One entity, concept, or decision per page. Cross-linked with markdown links.
 
 ### Operations (ambient vocabulary)
@@ -106,9 +107,24 @@ For conversational answers, prose. Visuals are a tool, not a requirement.
 
 ---
 
-## Session Logging
+## Session Continuity
 
-Every session that produces meaningful work appends an entry to `/wiki/log.md`:
+Sessions are not atomic — work crosses day boundaries. Two artifacts carry state across the gap: `/wiki/log.md` (append-only history) and `/wiki/next.md` (single-file hand-off).
+
+### Resuming a session
+
+At the start of every session, before any task work:
+
+1. Read `/wiki/index.md` to orient.
+2. Read `/wiki/next.md` to see where the last session left off.
+3. Scan `/input/` for new or updated files.
+4. If the user says "where did we leave off" (or similar), restate `/wiki/next.md` verbatim as the opening response and propose the next action from it.
+
+### Ending a session — the hand-off
+
+Every session that produces meaningful work does two things before wrapping up:
+
+**1. Append to `/wiki/log.md`:**
 
 ```markdown
 ## [YYYY-MM-DD] session | Brief description
@@ -122,6 +138,28 @@ Every session that produces meaningful work appends an entry to `/wiki/log.md`:
 
 The `## [YYYY-MM-DD] operation |` prefix is grep-friendly — `grep "^## \[" wiki/log.md | tail -5` returns the last 5 entries.
 
+**2. Overwrite `/wiki/next.md` with the current hand-off:**
+
+```markdown
+# Next — [PROJECT_NAME]
+
+_Last updated: YYYY-MM-DD_
+
+## Next action
+[One concrete thing to do next. A verb, not a vibe.]
+
+## Why
+[One or two sentences of context so future-you can pick up cold without rereading the whole log.]
+
+## Open threads
+- [Anything unresolved, blocking, or waiting on the user]
+
+## Recent context
+- Last session: [one-line summary, link to session page if there is one]
+```
+
+**3. Print the contents of `/wiki/next.md` as the closing message of the session** — the "hot swap." The user sees the hand-off in the chat, can act on it immediately, and the same hand-off is persisted for the next cold start.
+
 ---
 
 ## Final Checklist Before Writing to /output/
@@ -130,4 +168,5 @@ The `## [YYYY-MM-DD] operation |` prefix is grep-friendly — `grep "^## \[" wik
 - [ ] Tone matches the project type
 - [ ] Wiki updated with any durable insight from this work
 - [ ] Log entry appended to `/wiki/log.md`
+- [ ] `/wiki/next.md` overwritten with current hand-off, then printed as closing message
 - [ ] No draft files in `/output/`

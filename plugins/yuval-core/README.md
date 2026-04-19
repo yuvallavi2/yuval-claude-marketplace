@@ -4,7 +4,7 @@ Core workspace plugin for Yuval's Claude setup.
 
 ## What's in it
 
-- **`init` skill** — Scaffolds a new project with four folders (`input/`, `in-progress/`, `output/`, `wiki/`), writes `CLAUDE.md` from the canonical template, injects persona, and initializes the wiki (Karpathy LLM Wiki pattern).
+- **`init` skill** — Scaffolds a new project with four folders (`input/`, `in-progress/`, `output/`, `wiki/`), writes `CLAUDE.md` from the canonical template, injects persona, and initializes the wiki (Karpathy LLM Wiki pattern). The scaffolded wiki includes `index.md`, `log.md`, and `next.md` — the last file carries session-to-session continuity: every session ends by overwriting `next.md` with the current hand-off and printing it as the closing message, and every session starts by reading it.
 
 ## How it reads the marketplace
 

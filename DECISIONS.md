@@ -198,3 +198,22 @@ Each entry has three parts: **Decision** (what), **Reasoning** (why), and **Reje
 **Rejected alternatives:**
 - *Shared `references/` at the plugin level* — avoids duplication but creates cross-skill coupling. Skills should be self-contained.
 - *Keep D-013 as-is* — the external path was an unsolved problem (see "Template sync on multiple machines" open question, now closed).
+
+---
+
+## D-017 — Session continuity via a dedicated `/wiki/next.md` hand-off file
+
+**Decision:** Session-to-session continuity is carried by a single file, `/wiki/next.md`, alongside the append-only `/wiki/log.md`. Every session that produces meaningful work overwrites `next.md` with the current hand-off (next action, why, open threads, recent context) and prints its contents as the closing chat message — the "hot swap." The next session starts by reading `next.md` before any task work. A user prompt of "where did we leave off" triggers restating `next.md` verbatim.
+
+**Reasoning:** Two failure modes the template needed to fix. (1) End-of-session drift: without an explicit hand-off, the next session starts cold and reconstructs state from scratch — slow and error-prone. (2) Multi-day discontinuity: log entries bury the forward pointer in a mass of past entries, and without a known, always-current location for "what's next," the user has to hunt for it. A dedicated file at a fixed path (`/wiki/next.md`) solves both: always findable, always overwritten, read at session start, printed at session end so the user sees it live in the chat.
+
+**Implementation:**
+- `init` skill scaffolds `/wiki/next.md` on first run with an empty hand-off.
+- `init` re-run back-fills `next.md` if a project predates the contract; does not overwrite an existing one.
+- `claude-template.md` teaches the resume protocol and hand-off protocol explicitly, plus the "print as closing message" rule.
+- Final checklist in the template includes "`/wiki/next.md` overwritten with current hand-off, then printed as closing message."
+
+**Rejected alternatives:**
+- *"Next" section on each dated session page in `/wiki/pages/`* — no new file, but the forward pointer moves every session; you have to find the latest session page to find the pointer. Brittle when sessions nest or when multiple were opened on the same day.
+- *Forward pointer inside `/wiki/log.md`* — conflates append-only history with live mutable state. Violates the log's immutability invariant.
+- *A `/session-end` slash command that mechanically writes the file* — cleaner than relying on CLAUDE.md instructions, but adds a second enforcement surface (skill + template). Revisit if the instruction-based approach turns out to be unreliable in practice.
