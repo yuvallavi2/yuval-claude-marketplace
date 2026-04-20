@@ -217,3 +217,22 @@ Each entry has three parts: **Decision** (what), **Reasoning** (why), and **Reje
 - *"Next" section on each dated session page in `/wiki/pages/`* — no new file, but the forward pointer moves every session; you have to find the latest session page to find the pointer. Brittle when sessions nest or when multiple were opened on the same day.
 - *Forward pointer inside `/wiki/log.md`* — conflates append-only history with live mutable state. Violates the log's immutability invariant.
 - *A `/session-end` slash command that mechanically writes the file* — cleaner than relying on CLAUDE.md instructions, but adds a second enforcement surface (skill + template). Revisit if the instruction-based approach turns out to be unreliable in practice.
+
+---
+
+## D-018 — Framework/project separation: memory protocol lives in the wiki, not in CLAUDE.md
+
+**Decision:** All rules for operating the wiki — wiki discipline, session continuity, the session hand-off contract, the memory-protocol checklist — live in a single framework-owned file, `/wiki/memory-protocol.md`, bundled with the `init` skill as `skills/init/references/memory-protocol.md`. `CLAUDE.md` keeps only project-level configuration (identity, folder structure, persona, output style, autonomy, final checklist) and a one-paragraph pointer to the protocol file. On every `init` run, `/wiki/memory-protocol.md` is created (first run) or additively merged (re-run) from the bundled reference.
+
+**Reasoning:** Before this split, CLAUDE.md carried two concerns at once: per-project configuration (which varies by project) and the framework's memory protocol (which is identical across every project). Bundling them meant framework updates had to propagate through CLAUDE.md's additive-merge path — slow to roll out, hard to read, and architecturally muddled. Splitting gives each concern a single source of truth: project settings in CLAUDE.md, framework rules in `/wiki/memory-protocol.md`. The rules for operating the wiki now live *in* the wiki, which is conceptually consistent. Future framework edits happen in one plugin template file and propagate via `init` re-runs without touching project-specific content.
+
+**Implementation:**
+- New bundled reference: `skills/init/references/memory-protocol.md` — the canonical protocol text.
+- `skills/init/references/claude-template.md` slimmed: Wiki Discipline + Session Continuity sections removed; replaced with a short `## Long-term memory protocol` pointer; Folder Structure rules bullet and Final Checklist updated to reference `/wiki/memory-protocol.md`.
+- `skills/init/SKILL.md` updated: Step 3 reads three references (template, persona, memory protocol); Step 6 scaffolds `/wiki/memory-protocol.md` on every invocation (create-if-missing, additive-merge if present); Step 7 confirmation surfaces the `memory-protocol.md:` state.
+- Legacy projects (CLAUDE.md still carrying the pre-extraction sections) are handled by a one-time manual cleanup before re-running `init`, not by an automatic migration path in the skill. Rationale: only one such project existed at the time of the change (Mira), so the cost of hand-cleaning it was lower than the cost of writing and maintaining migration logic.
+
+**Rejected alternatives:**
+- *Keep everything inlined in CLAUDE.md* — works, but every framework update forces a CLAUDE.md merge in every project, and the architectural split between project config and framework protocol never gets expressed.
+- *Put the protocol at a plugin-owned path outside the project (e.g., read it live from the installed plugin)* — tighter canonicality, but projects would lose the ability to read the protocol without the plugin installed, and the wiki stops being self-contained. Keeping a copy inside each project's `/wiki/` preserves offline readability and the "the wiki is the project's memory" invariant.
+- *Auto-migrate legacy CLAUDE.md files via a one-time skill step* — drafted in the original spec (Edit C). Dropped because only one legacy project existed; the migration logic had more surface area than the manual cleanup.

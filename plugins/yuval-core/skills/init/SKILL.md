@@ -52,16 +52,17 @@ Determine these values from the project folder:
 
 - **PROJECT_GOAL**: Infer a one-line goal from the folder name, or default to `TBD — update before first task`
 
-## Step 3 — Read the Template and Persona
+## Step 3 — Read the Template, Persona, and Memory Protocol
 
-Both files are bundled with this skill in the `references/` folder. Version control and updates happen through the plugin's git repo — edits are made there, pushed, and propagated via plugin updates.
+Three files are bundled with this skill in the `references/` folder. Version control and updates happen through the plugin's git repo — edits are made there, pushed, and propagated via plugin updates.
 
 **Template path:** `${SKILL_DIR}/references/claude-template.md`
 **Persona path:** `${SKILL_DIR}/references/persona.md`
+**Memory protocol path:** `${SKILL_DIR}/references/memory-protocol.md`
 
-Read both files using the Read tool.
+Read all three files using the Read tool.
 
-**If either file is missing:** This indicates a broken plugin installation. Warn the user and stop.
+**If any file is missing:** This indicates a broken plugin installation. Warn the user and stop.
 
 ## Step 4 — Merge Persona Into Template
 
@@ -121,7 +122,18 @@ This prune runs *after* the additive merge in Step 5 has produced the merged CLA
 
 ## Step 6 — Scaffold the Wiki
 
-Handle each wiki artifact independently. Each block below specifies its own create/skip/append behavior — **do not treat this step as "first run only."** On a re-run, every block must still be evaluated because older projects may be missing artifacts introduced by later versions of the skill (e.g. `next.md`).
+Handle each wiki artifact independently. Each block below specifies its own create/skip/append behavior — **do not treat this step as "first run only."** On a re-run, every block must still be evaluated because older projects may be missing artifacts introduced by later versions of the skill (e.g. `next.md`, `memory-protocol.md`).
+
+### `/wiki/memory-protocol.md` — create-if-missing, additive-merge if present
+
+**This block must run on every invocation.** It is the propagation path for memory-protocol updates: edits to `${SKILL_DIR}/references/memory-protocol.md` reach existing projects through `init` re-runs.
+
+- **If `/wiki/memory-protocol.md` does not exist:** write the contents of `${SKILL_DIR}/references/memory-protocol.md` verbatim to it. Track this as `created`.
+- **If `/wiki/memory-protocol.md` already exists:** apply the same additive-merge logic used for CLAUDE.md (Step 5 re-run branch) — compare section by section, add any new sections or bullets from the bundled reference, never remove or shorten existing content. Track as `refreshed` if anything was added, otherwise `already present`.
+
+The `memory-protocol.md` reference file is the canonical memory protocol. It is owned by this plugin. Projects receive updates by re-running `init` after the plugin updates.
+
+**Track the resulting state** (`created` / `refreshed` / `already present`) and pass it through to the `log.md` template-sync entry and the final confirmation in Step 7.
 
 ### `/wiki/index.md` — create-if-missing
 
@@ -177,11 +189,11 @@ Append-only chronological record of ingests, queries, lint passes, and sessions.
 - Folders created: /input /in-progress /output /wiki /wiki/pages
 - CLAUDE.md configured from template
 - Persona injected from persona.md
-- Wiki scaffolded (index.md, log.md, next.md)
+- Wiki scaffolded (memory-protocol.md, index.md, log.md, next.md)
 - Status: Ready for first task
 ```
 
-If `/wiki/log.md` already exists, append a `template-sync` entry. Fill in the `next.md:` line using the flag tracked in the `/wiki/next.md` block below — use `created (back-filled for pre-continuity project)` if the file was created this run, otherwise `already present`. Fill in `Deprecated sections removed:` with the comma-separated list tracked in Step 5.5, or `none` if nothing was pruned.
+If `/wiki/log.md` already exists, append a `template-sync` entry. Fill in the `next.md:` line using the flag tracked in the `/wiki/next.md` block below — use `created (back-filled for pre-continuity project)` if the file was created this run, otherwise `already present`. Fill in the `memory-protocol.md:` line using the flag tracked in the `/wiki/memory-protocol.md` block above — one of `created`, `refreshed`, or `already present`. Fill in `Deprecated sections removed:` with the comma-separated list tracked in Step 5.5, or `none` if nothing was pruned.
 
 ```markdown
 ## [DATE] template-sync | CLAUDE.md refreshed
@@ -190,6 +202,7 @@ If `/wiki/log.md` already exists, append a `template-sync` entry. Fill in the `n
 - Persona block preserved (refresh persona separately)
 - Deprecated sections removed: [list or "none"]
 - next.md: [created (back-filled for pre-continuity project) | already present]
+- memory-protocol.md: [created | refreshed | already present]
 - Status: Instructions refreshed
 ```
 
@@ -243,14 +256,13 @@ Project initialized: [Project Name]
 Folders: /input /in-progress /output /wiki
 CLAUDE.md configured (template: skills/init/references/claude-template.md)
 Persona injected (source: skills/init/references/persona.md)
-Wiki scaffolded (index.md + log.md + next.md)
+Wiki scaffolded (memory-protocol.md + index.md + log.md + next.md)
 next.md: created
+memory-protocol.md: created
 Ready — drop files into /input and describe your first task.
 ```
 
-**Re-run** — respond with one of the two concrete forms below, selected by the `next.md` created-this-run flag tracked in Step 6. No bracket-OR notation in the output. Fill `Deprecated sections removed` with the comma-separated list from Step 5.5, or `none` if nothing was pruned.
-
-If `next.md` was created this run (back-filled for a pre-continuity project):
+**Re-run** — respond with the form below. Fill the `next.md:` line with `created (back-filled for pre-continuity project)` if the file was created this run, otherwise `already present`. Fill the `memory-protocol.md:` line with one of `created`, `refreshed`, or `already present` based on the flag tracked in Step 6. Fill `Deprecated sections removed` with the comma-separated list from Step 5.5, or `none` if nothing was pruned. No bracket-OR notation in the output.
 
 ```
 Project updated: [Project Name]
@@ -259,17 +271,6 @@ New sections/items added — no existing content removed outside the deprecated-
 Persona block preserved (use /refresh-persona to update persona separately)
 Deprecated sections removed: [list or "none"]
 Wiki log entry appended
-next.md: created (back-filled for pre-continuity project)
-```
-
-Otherwise:
-
-```
-Project updated: [Project Name]
-CLAUDE.md refreshed from skills/init/references/claude-template.md
-New sections/items added — no existing content removed outside the deprecated-sections channel
-Persona block preserved (use /refresh-persona to update persona separately)
-Deprecated sections removed: [list or "none"]
-Wiki log entry appended
-next.md: already present
+next.md: [created (back-filled for pre-continuity project) | already present]
+memory-protocol.md: [created | refreshed | already present]
 ```

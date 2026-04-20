@@ -1,9 +1,9 @@
 {
   "name": "yuval-core",
-  "version": "0.4.2",
-  "description": "v0.4.2 — Yuval Core workspace plugin: project scaffolding (init), wiki discipline, session continuity, and persona management.",
+  "version": "0.5.0",
+  "description": "v0.5.0 — Yuval Core workspace plugin: project scaffolding (init), wiki discipline, session continuity, persona management, and a framework-canonical memory protocol in /wiki/memory-protocol.md.",
   "author": {
     "name": "Yuval Lavi"
   },
-  "keywords": ["init", "workspace", "wiki", "karpathy", "persona", "session-continuity"]
+  "keywords": ["init", "workspace", "wiki", "karpathy", "persona", "session-continuity", "memory-protocol"]
 }
