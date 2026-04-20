@@ -108,6 +108,17 @@ Additive merge. Goal: bring the existing CLAUDE.md up to date with the latest te
 - When in doubt, keep existing content and append new content below it.
 - **Exception for persona block**: on re-run, do NOT touch content between `<!-- PERSONA:START -->` and `<!-- PERSONA:END -->`. Persona refresh is a deliberate act reserved for a future `/refresh-persona` command — init should not silently overwrite a user's in-project persona.
 
+## Step 5.5 — Prune Deprecated Sections (re-run only)
+
+On first run, skip this step. On re-run:
+
+1. Read `skills/init/references/deprecated-sections.md`.
+2. For each section heading listed under `## Currently deprecated`, check whether the existing `CLAUDE.md` contains that heading.
+3. If present, remove the `## Heading` line and all lines up to (but not including) the next `## ` heading or the end of file.
+4. Track the list of sections actually removed — report it in the final confirmation output (Step 7).
+
+This prune runs *after* the additive merge in Step 5 has produced the merged CLAUDE.md but *before* writing to disk — prune, then write. (Alternatively: run before the merge, apply merge on top; both produce the same result since the template no longer contains these sections.)
+
 ## Step 6 — Scaffold the Wiki
 
 Handle each wiki artifact independently. Each block below specifies its own create/skip/append behavior — **do not treat this step as "first run only."** On a re-run, every block must still be evaluated because older projects may be missing artifacts introduced by later versions of the skill (e.g. `next.md`).
@@ -120,6 +131,8 @@ If `/wiki/index.md` does not exist, create it with the template below. If it alr
 # Wiki Index — [PROJECT_NAME]
 
 The content catalog for this project's wiki. Read this first when answering any question — it points to the relevant pages. One-line summaries only; drill into individual pages for detail.
+
+> **Current next action:** see [next.md](next.md) — the single-file session hand-off, refreshed each session.
 
 ## Sources
 _(Raw sources that have been ingested from /input/. Each entry links to a summary page in /wiki/pages/.)_
@@ -168,14 +181,15 @@ Append-only chronological record of ingests, queries, lint passes, and sessions.
 - Status: Ready for first task
 ```
 
-If `/wiki/log.md` already exists, append a `template-sync` entry:
+If `/wiki/log.md` already exists, append a `template-sync` entry. Fill in the `next.md:` line using the flag tracked in the `/wiki/next.md` block below — use `created (back-filled for pre-continuity project)` if the file was created this run, otherwise `already present`. Fill in `Deprecated sections removed:` with the comma-separated list tracked in Step 5.5, or `none` if nothing was pruned.
 
 ```markdown
 ## [DATE] template-sync | CLAUDE.md refreshed
 - CLAUDE.md updated with latest bundled template (skills/init/references/)
-- Additive merge applied — no content removed
+- Additive merge applied — no content removed outside the sanctioned deprecated-sections channel
 - Persona block preserved (refresh persona separately)
-- next.md: [created | already present]
+- Deprecated sections removed: [list or "none"]
+- next.md: [created (back-filled for pre-continuity project) | already present]
 - Status: Instructions refreshed
 ```
 
@@ -184,6 +198,8 @@ If `/wiki/log.md` already exists, append a `template-sync` entry:
 **This block must run on every invocation, including re-runs.** Older projects that predate the session continuity contract won't have `next.md`, and the re-run must back-fill it — otherwise the contract defined in CLAUDE.md has nothing to read.
 
 If `/wiki/next.md` does not exist, create it with the empty hand-off below. If it already exists, leave it alone.
+
+**Track whether `next.md` was created this run.** Pass this flag through to the `log.md` template-sync entry above and to the final confirmation in Step 7.
 
 ```markdown
 # Next — [PROJECT_NAME]
@@ -205,9 +221,9 @@ _None yet._
 
 The session continuity contract itself lives in CLAUDE.md: read `next.md` at session start, overwrite and print it at session end.
 
-## Step 7 — Create Input README (first run only)
+### `/input/README.md` — create-if-missing
 
-If `/input/README.md` does not exist, create it:
+If `/input/README.md` does not exist, create it with the template below. If it already exists, leave it alone.
 
 ```markdown
 # Input — [PROJECT_NAME]
@@ -218,9 +234,7 @@ Claude scans this folder at the start of every session.
 To ingest a file into the wiki, drop it here and say "ingest [filename]" or "ingest everything new."
 ```
 
-If it already exists, skip.
-
-## Step 8 — Confirm
+## Step 7 — Confirm
 
 **First run** — respond with:
 
@@ -230,16 +244,32 @@ Folders: /input /in-progress /output /wiki
 CLAUDE.md configured (template: skills/init/references/claude-template.md)
 Persona injected (source: skills/init/references/persona.md)
 Wiki scaffolded (index.md + log.md + next.md)
+next.md: created
 Ready — drop files into /input and describe your first task.
 ```
 
-**Re-run** — respond with:
+**Re-run** — respond with one of the two concrete forms below, selected by the `next.md` created-this-run flag tracked in Step 6. No bracket-OR notation in the output. Fill `Deprecated sections removed` with the comma-separated list from Step 5.5, or `none` if nothing was pruned.
+
+If `next.md` was created this run (back-filled for a pre-continuity project):
 
 ```
 Project updated: [Project Name]
 CLAUDE.md refreshed from skills/init/references/claude-template.md
-New sections/items added — no existing content removed
+New sections/items added — no existing content removed outside the deprecated-sections channel
 Persona block preserved (use /refresh-persona to update persona separately)
+Deprecated sections removed: [list or "none"]
 Wiki log entry appended
-next.md: [created | already present]
+next.md: created (back-filled for pre-continuity project)
+```
+
+Otherwise:
+
+```
+Project updated: [Project Name]
+CLAUDE.md refreshed from skills/init/references/claude-template.md
+New sections/items added — no existing content removed outside the deprecated-sections channel
+Persona block preserved (use /refresh-persona to update persona separately)
+Deprecated sections removed: [list or "none"]
+Wiki log entry appended
+next.md: already present
 ```
