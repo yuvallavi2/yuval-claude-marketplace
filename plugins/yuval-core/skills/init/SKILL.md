@@ -22,17 +22,18 @@ This skill supports two modes:
 
 ## Step 1 — Create Subfolders
 
-Create these four subfolders in the project root if they don't already exist:
+Create these subfolders in the project root if they don't already exist:
 
 ```
 /input/
 /in-progress/
 /output/
+/output/briefs/
 /wiki/
 /wiki/pages/
 ```
 
-Use `mkdir -p` via Bash to create them. `/wiki/pages/` is where individual wiki pages live; `/wiki/` itself holds `index.md` and `log.md`.
+Use `mkdir -p` via Bash to create them. `/wiki/pages/` is where individual wiki pages live; `/wiki/` itself holds `index.md` and `log.md`. `/output/briefs/` is the home for code briefs (`CB-XXX`) — the only artifact promoted into `/code/` via `/yuval-core:promote-to-code`. The folder is created on every project (always-on) so a project can author its first brief without a separate scaffolding step, even if the project never grows a `/code/` workspace.
 
 ## Step 2 — Detect Project Info
 
@@ -186,7 +187,7 @@ Append-only chronological record of ingests, queries, lint passes, and sessions.
 ---
 
 ## [DATE] init | Project initialized
-- Folders created: /input /in-progress /output /wiki /wiki/pages
+- Folders created: /input /in-progress /output /output/briefs /wiki /wiki/pages
 - CLAUDE.md configured from template
 - Persona injected from persona.md
 - Wiki scaffolded (memory-protocol.md, index.md, log.md, next.md)
@@ -253,13 +254,13 @@ To ingest a file into the wiki, drop it here and say "ingest [filename]" or "ing
 
 ```
 Project initialized: [Project Name]
-Folders: /input /in-progress /output /wiki
+Folders: /input /in-progress /output /output/briefs /wiki
 CLAUDE.md configured (template: skills/init/references/claude-template.md)
 Persona injected (source: skills/init/references/persona.md)
 Wiki scaffolded (memory-protocol.md + index.md + log.md + next.md)
 next.md: created
 memory-protocol.md: created
-Ready — drop files into /input and describe your first task.
+Ready — drop files into /input and describe your first task. To scope code work, run `/yuval-core:write-brief`.
 ```
 
 **Re-run** — respond with the form below. Fill the `next.md:` line with `created (back-filled for pre-continuity project)` if the file was created this run, otherwise `already present`. Fill the `memory-protocol.md:` line with one of `created`, `refreshed`, or `already present` based on the flag tracked in Step 6. Fill `Deprecated sections removed` with the comma-separated list from Step 5.5, or `none` if nothing was pruned. No bracket-OR notation in the output.

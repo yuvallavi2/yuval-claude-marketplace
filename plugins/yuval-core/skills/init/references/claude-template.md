@@ -35,6 +35,19 @@ All rules for operating the wiki, session continuity, and the session hand-off l
 
 ---
 
+## Code workspace
+
+If `/code/` exists in the project root, this project has been promoted to code. Code-mode rules (branching, commits, ADR discipline, code wiki) live in `/code/CLAUDE.md`. The handshake skill and commands that bridge ideation and code:
+
+- `/yuval-core:init-code` — scaffold `/code/` (git repo, code wiki, code-mode CLAUDE.md). Run once when the project first grows a code surface.
+- `/yuval-core:write-brief` — author a code brief (`CB-XXX`) in `/output/briefs/`. Briefs are the only promotion-eligible artifact.
+- `/yuval-core:promote-to-code CB-XXX` — promote a brief: adds an ADR to `/code/DECISIONS.md`, freezes the brief, logs both wikis.
+- `/yuval-core:report-back <finding>` — push a code-side finding back to ideation; logs both wikis.
+
+If `/code/` does not exist, this is an ideation-only project and these commands are inert until `/yuval-core:init-code` runs. Many projects (research, content, decks) never need it.
+
+---
+
 <!-- PERSONA:START -->
 <!-- Replaced at init time with content from persona.md -->
 <!-- PERSONA:END -->

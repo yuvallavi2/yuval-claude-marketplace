@@ -1,0 +1,25 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows
+Thumbs.db
+Desktop.ini
+
+# Editor / IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Claude local state (if any leaks into a working copy)
+.claude/cache/
+.claude/plugins/cache/
+
+# Local environment / secrets
+.env
+.env.local
+*.pem
+*.key

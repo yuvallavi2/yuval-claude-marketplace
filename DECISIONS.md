@@ -236,3 +236,94 @@ Each entry has three parts: **Decision** (what), **Reasoning** (why), and **Reje
 - *Keep everything inlined in CLAUDE.md* — works, but every framework update forces a CLAUDE.md merge in every project, and the architectural split between project config and framework protocol never gets expressed.
 - *Put the protocol at a plugin-owned path outside the project (e.g., read it live from the installed plugin)* — tighter canonicality, but projects would lose the ability to read the protocol without the plugin installed, and the wiki stops being self-contained. Keeping a copy inside each project's `/wiki/` preserves offline readability and the "the wiki is the project's memory" invariant.
 - *Auto-migrate legacy CLAUDE.md files via a one-time skill step* — drafted in the original spec (Edit C). Dropped because only one legacy project existed; the migration logic had more surface area than the manual cleanup.
+
+---
+
+## D-019 — Code workspace extension: bootstrap brief CB-001
+
+**Decision:** Implement the code-workspace extension to `yuval-core` per the design in `../output/code-workspace-design.md`, scoped by the brief at `../output/briefs/CB-001-bootstrap-code-workspace.md`. New artifacts: `init-code` skill, `write-brief` skill, `promote-to-code` command, `report-back` command. Modifications to existing `init`: scaffold `/output/briefs/`, add a "Code workspace" pointer to the slim CLAUDE.md template, extend `deprecated-sections.md` to handle the legacy memory-protocol migration through the existing sanctioned-removal channel rather than bespoke logic. Plugin version bumped accordingly.
+
+**Reasoning:** The marketplace already supports ideation projects (`init` + wiki). Code work needs its own surface — its own git repo, its own wiki, explicit handshake protocols back to ideation. The design separates the two cleanly: ideation owns project identity at the root; code lives as a `/code/` subfolder with its own self-contained wiki and `DECISIONS.md`. Briefs (`CB-XXX`) become the only promotion-eligible artifact between modes — specs and reports remain reference material that briefs link to. Handshake commands (`promote-to-code`, `report-back`) are the only sanctioned cross-mode edges; everything else stays one-sided.
+
+This ADR captures the decision-to-implement at the brief level. The structural sub-decisions baked into the design (nested topology, two-wiki separation, briefs-only promotion, handshake commands as the only edges, brief tags vs release tags) are recorded as their own entries (D-020 through D-024) so each is independently citable.
+
+**Implementation:** See brief at `../output/briefs/CB-001-bootstrap-code-workspace.md` for the full scope and acceptance criteria. Bootstrap caveat: `promote-to-code` is itself part of this brief's scope, so the promotion of CB-001 was hand-authored — this ADR was added manually, the brief's status field was flipped to `promoted` in place, and the `promote` log entries were appended to both `/wiki/log.md` and `/code/wiki/log.md` (the latter back-filled after `init-code` ran).
+
+**Rejected alternatives:**
+- *Auto-create `/code/` in `init`* — pollutes ideation-only projects with unused git scaffolding. Confirmed by D-003.
+- *Single wiki spanning ideation + code* — already rejected by D-001. Code-workspace design re-affirms.
+- *Promote any `/output/` artifact, not just briefs* — too loose; specs and reports are reference material, not scoped commitments. Briefs are the contract.
+
+---
+
+## D-020 — Code workspace nested under ideation root, not sibling
+
+**Decision:** When a project promotes to code, `/code/` is a **subfolder** of the ideation project root (`project-root/code/`), not a sibling (`project-root-code/`). Ideation owns project identity at the root. Relative paths from `/code/` to `../output/` and `../wiki/` are stable across machines and clones.
+
+**Reasoning:** A solo operator already pays one folder coordination tax per project (D-002). Splitting into sibling top-level folders would double it. Nesting also lets `/code/` reference ideation artifacts by stable relative paths (`../output/briefs/CB-XXX.md`), which matters for ADRs that cite their originating brief. Cowork can mount either the project root (full ideation + code view) or `/code/` alone (code-only view); the inner CLAUDE.md is self-sufficient for the latter case.
+
+**Rejected alternatives:**
+- *Sibling top-level folders linked by reference* — cleanest conceptual separation but doubles setup cost and breaks stable relative paths between code and ideation artifacts.
+- *Code as a git submodule of an ideation parent repo* — submodule complexity for no real benefit; D-004 already established the parent is unversioned.
+
+---
+
+## D-021 — Two wikis with shared protocol, each self-contained
+
+**Decision:** Ideation and code each have their own wiki: `/wiki/` at the project root, `/code/wiki/` inside the code repo. Each carries its own full copy of `memory-protocol.md`, `index.md`, `log.md`, `next.md`, and `pages/`. No symlinks, no submodules, no shared mutable state. Both `memory-protocol.md` files are populated from the same plugin reference (`skills/init/references/memory-protocol.md`) so they stay synchronized via re-runs.
+
+**Reasoning:** Each wiki must be functional standalone. Cowork mount of just `/code/` should be a complete code-mode workspace; mount of just the ideation root should be a complete ideation workspace. Symlinking the protocol file would break that — a missing target leaves the wiki without rules. Duplicating from a shared reference accepts a small drift risk (re-run frequency must be high enough that protocol updates propagate before they matter) in exchange for full self-containment. The wiki is the project's memory — having the rules for the wiki live *in* the wiki keeps the invariant clean.
+
+Cross-wiki references go by relative path when needed (`[D-007](../code/DECISIONS.md#d-007)` or `[Source: foo](../../wiki/pages/foo.md)`). Link rot across the boundary is a known risk, accepted for now.
+
+**Rejected alternatives:**
+- *Single wiki spanning both modes* — rejected by D-001 originally; re-confirmed here. Audience and entity mismatch.
+- *Shared `memory-protocol.md` via symlink* — fragile across OSes and breaks the standalone-wiki invariant.
+- *Code wiki without its own `memory-protocol.md` (read from ideation copy)* — couples the two wikis and breaks code-only mounts.
+
+---
+
+## D-022 — `init-code` is a separate skill from `init`
+
+**Decision:** Code workspace creation lives in its own skill, `init-code`, not as a flag or branch within `init`. `init` scaffolds ideation only. `init-code` scaffolds `/code/` and the code wiki, runs `git init` (or detects an existing `.git/` and skips), and populates the inner CLAUDE.md, README.md, DECISIONS.md, .gitignore, and code wiki templates.
+
+**Reasoning:** D-003 already established `/code/` as opt-in. Putting that opt-in behind a separate skill name (rather than `init --with-code` or similar) makes the choice explicit at invocation time and keeps each skill's surface narrow and testable. Re-runs of either skill are independent: re-running `init` doesn't accidentally touch code state; re-running `init-code` doesn't churn ideation files. The design also lets `init-code` carry its own reference templates without bloating the `init` skill's bundle for projects that never need code.
+
+**Rejected alternatives:**
+- *Single `init` skill with a `--with-code` flag or interactive prompt* — couples concerns, makes re-runs ambiguous (does the flag re-apply?), and grows the skill surface.
+- *Auto-detect `/code/` and run code-mode scaffolding from `init`* — surprises the user; opt-in should be explicit.
+
+---
+
+## D-023 — Briefs are the only promotion-eligible artifact
+
+**Decision:** Only `CB-XXX` briefs in `/output/briefs/` are promotion-eligible via `promote-to-code`. Other `/output/` artifacts — specs, design docs, reports, decks — are reference material that briefs link to, never promoted directly. Promotion is the moment a scoped commitment crosses into code. Reference material describes the world; only briefs commit to changing it.
+
+**Reasoning:** Anything could in principle become an ADR, but most things shouldn't. A spec is a description; an ADR is a decision. Forcing all promotion through briefs gives every code-side decision a consistent contract: a frozen, dated, scoped statement of what's being committed to. It also creates a clean lifecycle (`open` → `promoted` → `closed`) and a clean traceability path from ADR back to the originating commitment.
+
+If a non-brief artifact contains durable insight that should reach `/code/`, the path is: author a brief that references it, then promote the brief.
+
+**Rejected alternatives:**
+- *Any `/output/` artifact can be promoted* — works mechanically but produces inconsistent ADRs (some are decisions, some are descriptions of state). Loses the contract semantics of a brief.
+- *No formal promotion artifact; just file ADRs directly in `/code/DECISIONS.md`* — works but loses the bidirectional traceability between ideation scope and code commitment, and loses the freezing semantics that make a brief immutable post-promotion.
+
+---
+
+## D-024 — Handshake commands are the only sanctioned cross-mode edges; brief tags distinct from release tags
+
+**Decision:** Two-part decision binding cross-mode protocol and tagging discipline.
+
+**Cross-mode edges:** The only sanctioned mutations across the ideation/code boundary are the two handshake commands: `promote-to-code` (ideation → code) and `report-back` (code → ideation). Routine commits, file edits, and wiki updates stay within their own mode. Cross-mode events that bypass the handshakes (e.g., manually editing `/code/DECISIONS.md` to reference a `/output/` artifact without running `promote-to-code`) lose the bidirectional logging that makes the trail debuggable later.
+
+**Tagging:** Two independent tag namespaces coexist on the code repo:
+- `brief/CB-XXX` — annotated tag at the commit where a brief's acceptance criteria are met. One per closed brief. Anchors "this is the state at scope-completion of CB-XXX."
+- `vX.Y.Z` — release tag, semver, independent cadence. A release may bundle multiple closed briefs; a single brief may warrant its own release.
+
+Both can coexist on the same commit. Neither replaces the other. Release annotations should list the brief tags they include.
+
+**Reasoning:** Without the handshake-only rule, the two wikis silently diverge — every cross-mode finding that bypasses `report-back` is invisible on the ideation side. The discipline is fragile (easy to forget) but the cost of forgetting is recoverable; the cost of allowing arbitrary cross-mode mutations is structural confusion. The two-tag-namespace decision separates "scope-completion milestone" (per-brief, frequent) from "release milestone" (per-version, less frequent). One could be derived from the other in some cases, but they answer different questions: brief tags answer "where did CB-007 land?"; release tags answer "what's in v1.4.0?".
+
+**Rejected alternatives:**
+- *Allow direct cross-mode edits without handshake commands* — loses bidirectional logging.
+- *Single tag namespace (only `vX.Y.Z`, no `brief/` tags)* — releases bundle multiple briefs, so a release tag can't anchor a single brief's scope-completion. Forces brief closure into release cadence.
+- *`brief/` tags only, no release tags* — works for code-only history but breaks alignment with downstream consumers expecting semver releases.
