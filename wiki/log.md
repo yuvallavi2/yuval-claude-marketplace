@@ -48,3 +48,8 @@ grep "^## \[.*adr" wiki/log.md
 - Includes brief: brief/CB-001
 - Tag: annotated, local — push pending user instruction
 - Description: code-workspace extension (init-code, write-brief, promote-to-code, report-back) + briefs scaffolding + extended deprecated-sections channel for legacy memory-protocol migration
+
+## [2026-04-27] promote | CB-002 → D-025
+- Brief: ../../output/briefs/CB-002-proactive-wiki-protocol.md
+- ADR: D-025 in DECISIONS.md
+- Status: ready for implementation

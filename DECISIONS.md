@@ -327,3 +327,15 @@ Both can coexist on the same commit. Neither replaces the other. Release annotat
 - *Allow direct cross-mode edits without handshake commands* — loses bidirectional logging.
 - *Single tag namespace (only `vX.Y.Z`, no `brief/` tags)* — releases bundle multiple briefs, so a release tag can't anchor a single brief's scope-completion. Forces brief closure into release cadence.
 - *`brief/` tags only, no release tags* — works for code-only history but breaks alignment with downstream consumers expecting semver releases.
+
+---
+
+## D-025 — Proactive wiki protocol
+
+**Decision:** Implement the scope captured in [`../output/briefs/CB-002-proactive-wiki-protocol.md`](../output/briefs/CB-002-proactive-wiki-protocol.md) — see brief for full to-do list, out-of-scope items, and acceptance criteria.
+
+**Reasoning:** Update the canonical memory protocol with **proactive triggers** and the **live-session-page** convention, so wiki bookkeeping (`log.md` / `next.md` / session pages / `index.md`) happens at the right moments without requiring user prompts. Add a `Briefs` category to the `index.md` template so every brief's lifecycle state is visible at a glance.
+
+**Brief reference:** [`../output/briefs/CB-002-proactive-wiki-protocol.md`](../output/briefs/CB-002-proactive-wiki-protocol.md) — promoted 2026-04-27, status `promoted` post-promotion. The brief is immutable post-promotion and serves as the as-of-promotion snapshot of scope.
+
+**Rejected alternatives:** _(see brief's `## Out of scope` for what was explicitly excluded.)_
