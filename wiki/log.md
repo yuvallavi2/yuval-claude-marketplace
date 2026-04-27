@@ -53,3 +53,17 @@ grep "^## \[.*adr" wiki/log.md
 - Brief: ../../output/briefs/CB-002-proactive-wiki-protocol.md
 - ADR: D-025 in DECISIONS.md
 - Status: ready for implementation
+
+## [2026-04-27] close-brief | CB-002 closed at tag brief/CB-002
+- Brief: ../../output/briefs/CB-002-proactive-wiki-protocol.md (status: promoted → closed)
+- Tag created (local): brief/CB-002 (annotated)
+- Release tag created (local): v0.7.0
+- Push: pending user instruction
+- Scope met: Proactive triggers section added to memory-protocol.md (table + Live session page + Surfacing convention); claude-template.md Rules block points at the new section; init SKILL.md index.md template has the Briefs category; workbench migrated (memory-protocol.md refreshed, index.md Briefs entries updated for CB-001 closure and CB-002 promotion); plugin bumped 0.6.0 → 0.7.0
+- Scope deferred: runtime validation in a fresh scratch project (acceptance criterion 5) — structural validation of the references passed; runtime validation requires Yuval to mount a fresh project and run init
+
+## [2026-04-27] release | v0.7.0 (local tag)
+- Plugin: yuval-core 0.6.0 → 0.7.0
+- Includes brief: brief/CB-002
+- Tag: annotated, local — push pending user instruction
+- Description: proactive wiki protocol — adds Proactive triggers section + Live session page convention + Surfacing convention to memory-protocol.md; adds Briefs category to init's index.md template; claude-template.md Rules block points at the new triggers section

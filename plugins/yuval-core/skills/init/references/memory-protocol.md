@@ -36,6 +36,36 @@ Finished deliverables live in `/output/`. If a deliverable contains durable insi
 
 ---
 
+## Proactive triggers
+
+The protocol is most effective when wiki bookkeeping happens *while* work is in flight, not at session end. Watch for these signals and act on them at the moment they occur — without waiting for the user to prompt.
+
+| Trigger | Action |
+|---|---|
+| Artifact created or moved in `/output/` (incl. `/output/briefs/`) | Append `log.md` entry · touch the live session page |
+| Architectural / scoping decision made | Append to session page under Decisions · queue for `D-xxx` promotion if the project has a code workspace |
+| Brief authored / promoted / closed | `log.md` entry per the brief lifecycle (one entry per state transition) |
+| Mode pivot ("moving to implementation", "let's wrap", "switching tools") | Flush wiki updates *before* pivoting |
+| 5+ substantive turns since last wiki touch | Self-check; if anything durable accumulated, flush |
+
+### Live session page
+
+A dated session page in `/wiki/pages/` (e.g., `session-YYYY-MM-DD-topic.md`) is the **running notebook** of the session, not a closing deliverable.
+
+- **Create on the first durable event** of the session — first artifact, first decision, first milestone choice — whichever comes first. Don't wait for session end.
+- **Append throughout** the session under topical subheadings (e.g., `## Decisions`, `## Artifacts`, `## Open threads`). The page grows live.
+- **Finalize at session end** as part of the existing hand-off ritual — add a closing summary, link from `/wiki/index.md` if the project's index has a Sessions category.
+
+### Surfacing convention
+
+Wiki bookkeeping should be auditable without becoming chatter:
+
+- **Silent** for minor wiki touches: single log line, status field updates, routine appends.
+- **One-line acknowledgment** in chat at major milestones only: artifact created in `/output/`, brief authored / promoted / closed, mode pivot completed.
+- **No multi-paragraph reports** of bookkeeping. The wiki itself is the record; the chat is for working.
+
+---
+
 ## Session Continuity
 
 Sessions are not atomic — work crosses day boundaries. Two artifacts carry state across the gap: `/wiki/log.md` (append-only history) and `/wiki/next.md` (single-file hand-off).

@@ -8,8 +8,8 @@
     {
       "name": "yuval-core",
       "source": "./plugins/yuval-core",
-      "description": "v0.6.0 — Yuval Core workspace plugin: ideation scaffolding (init), code-workspace extension (init-code, write-brief, promote-to-code, report-back), Karpathy-style wiki discipline, session continuity, persona management, framework-canonical memory protocol shared by ideation and code wikis.",
-      "version": "0.6.0",
+      "description": "v0.7.0 — Yuval Core workspace plugin: ideation scaffolding (init), code-workspace extension (init-code, write-brief, promote-to-code, report-back), Karpathy-style wiki discipline with proactive bookkeeping triggers and live session pages, session continuity, persona management, framework-canonical memory protocol shared by ideation and code wikis.",
+      "version": "0.7.0",
       "author": {
         "name": "Yuval Lavi"
       },

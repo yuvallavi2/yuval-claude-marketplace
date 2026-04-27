@@ -23,6 +23,7 @@ Always respect this structure — no exceptions.
 
 ### Rules
 - **Start every session** by reading `/wiki/memory-protocol.md`, then `/wiki/index.md`, then `/wiki/next.md`. Then scan `/input/` for new or updated files.
+- **Update the wiki proactively** during the session — see "Proactive triggers" in `/wiki/memory-protocol.md`. Don't batch wiki updates at session end.
 - **Never write directly to `/output/`** until the deliverable is complete.
 - **Never delete** files from `/input/` or `/wiki/` without explicit instruction.
 - `/in-progress/` is the only folder the user treats as deletable. Don't put anything there you expect to survive.

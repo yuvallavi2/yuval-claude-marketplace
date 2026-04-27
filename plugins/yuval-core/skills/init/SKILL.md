@@ -147,6 +147,11 @@ The content catalog for this project's wiki. Read this first when answering any 
 
 > **Current next action:** see [next.md](next.md) — the single-file session hand-off, refreshed each session.
 
+## Briefs
+_(Code briefs (`CB-XXX`) authored in `/output/briefs/`. Each entry shows current lifecycle status — `(open)`, `(promoted: D-yyy)`, or `(closed: brief/CB-XXX)`. Empty until the project authors its first brief.)_
+
+_None yet._
+
 ## Sources
 _(Raw sources that have been ingested from /input/. Each entry links to a summary page in /wiki/pages/.)_
 
