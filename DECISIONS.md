@@ -339,3 +339,38 @@ Both can coexist on the same commit. Neither replaces the other. Release annotat
 **Brief reference:** [`../output/briefs/CB-002-proactive-wiki-protocol.md`](../output/briefs/CB-002-proactive-wiki-protocol.md) — promoted 2026-04-27, status `promoted` post-promotion. The brief is immutable post-promotion and serves as the as-of-promotion snapshot of scope.
 
 **Rejected alternatives:** _(see brief's `## Out of scope` for what was explicitly excluded.)_
+
+---
+
+## D-026 — Implement refresh-persona skill
+
+**Decision:** Implement the scope captured in [`../output/briefs/CB-003-implement-refresh-persona.md`](../output/briefs/CB-003-implement-refresh-persona.md) — see brief for full to-do list, out-of-scope items, and acceptance criteria.
+
+**Reasoning:** Ship the `/yuval-core:refresh-persona` skill so already-initialized projects can pull updated persona content into their `CLAUDE.md` without re-running `init`, fulfilling the deferred half of D-007.
+
+**Brief reference:** [`../output/briefs/CB-003-implement-refresh-persona.md`](../output/briefs/CB-003-implement-refresh-persona.md) — promoted 2026-04-30, status `promoted` post-promotion. The brief is immutable post-promotion and serves as the as-of-promotion snapshot of scope.
+
+**Rejected alternatives:** _(see brief's `## Out of scope` for what was explicitly excluded.)_
+
+---
+
+## D-027 — refresh-persona implementation: skill shape and missing-markers stance
+
+**Decision:** Two implementation-level structural commitments baked into CB-003, recorded here as their own ADR so they're independently citable from future work.
+
+**(a) Implemented as a skill, not a flat command file.** The refresh-persona surface lives at `plugins/yuval-core/skills/refresh-persona/` with its own `SKILL.md` and `references/persona.md`, not as a single file under `commands/`.
+
+**(b) Missing markers → abort with guidance, not auto-insert.** When invoked against a `CLAUDE.md` that lacks the `<!-- PERSONA:START -->` / `<!-- PERSONA:END -->` marker pair, the skill aborts with an actionable message instructing the user to either add the markers manually or re-run `/yuval-core:init` against a fresh project. It does not attempt to detect where the existing persona block lives and inject markers around it.
+
+**Reasoning:**
+
+*(a)* Per D-016, every skill carries its own `references/` folder. Refresh-persona inherently needs a persona file to refresh from; a flat command file would either reach into `init`'s `references/` (violates D-016's skill-independence rule) or live without bundled state (violates the self-contained-skill invariant). A skill is the right shape — bundled `persona.md` lives next to the SKILL.md that uses it. Cross-skill drift between `init`'s and refresh-persona's `persona.md` is tolerated, not policed; D-016 already accepts this tradeoff.
+
+*(b)* Auto-detecting persona-block boundaries in a project that predates D-007 is a heuristic with unbounded collision risk. Wrong placement of inserted markers silently corrupts the next refresh. The chosen contract — refuse with a clear, actionable message — costs the user one manual edit per legacy project and zero edge cases in the implementation. After the one-time cleanup, refresh becomes mechanical from then on. Same shape of decision as D-018's manual-cleanup stance for legacy `CLAUDE.md` migration.
+
+**Rejected alternatives:**
+
+- *Flat command file at `commands/refresh-persona.md` reaching into `skills/init/references/persona.md`* — couples two unrelated surfaces, violates D-016, makes `init` non-removable (refresh would break if init is ever uninstalled).
+- *Flat command file with persona content inlined* — duplicates the persona text inside a markdown file's prose, defeats the purpose of having a versioned `references/persona.md`.
+- *Auto-insert markers around the existing persona block* — heuristic placement on legacy projects has no safe rule. Easier to ask the user to do the one-time cleanup than to maintain a heuristic that gets wrong on edge cases.
+- *Insert markers at a fixed position (e.g., end of `## Who I Am Working With`)* — same problem as auto-insertion plus brittleness to template evolution.

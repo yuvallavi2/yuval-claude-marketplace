@@ -67,3 +67,35 @@ grep "^## \[.*adr" wiki/log.md
 - Includes brief: brief/CB-002
 - Tag: annotated, local — push pending user instruction
 - Description: proactive wiki protocol — adds Proactive triggers section + Live session page convention + Surfacing convention to memory-protocol.md; adds Briefs category to init's index.md template; claude-template.md Rules block points at the new triggers section
+
+## [2026-04-30] promote | CB-003 → D-026
+- Brief: ../../output/briefs/CB-003-implement-refresh-persona.md
+- ADR: D-026 in DECISIONS.md
+- Status: ready for implementation
+
+## [2026-04-30] adr | D-027 — refresh-persona implementation: skill shape & missing-markers stance
+- Sub-decision under D-026, recorded mid-implementation per the brief's promote step
+- (a) Implemented as a skill (skills/refresh-persona/) per D-016, not a flat command file
+- (b) Missing markers → abort with guidance, not auto-insert (collision-risk; matches D-018's manual-cleanup precedent)
+
+## [2026-04-30] implement | CB-003 — refresh-persona skill shipped
+- Created: plugins/yuval-core/skills/refresh-persona/SKILL.md, plugins/yuval-core/skills/refresh-persona/references/persona.md (verbatim copy of init's persona.md at ship time)
+- Updated: plugins/yuval-core/.claude-plugin/plugin.json (0.6.0 → 0.8.0; refresh-persona added to keywords; description refreshed) — note plugin.json had been left at 0.6.0 during CB-002, marketplace.json was at 0.7.0; both now realigned at 0.8.0
+- Updated: .claude-plugin/marketplace.json (0.7.0 → 0.8.0)
+- Updated: plugins/yuval-core/README.md (added refresh-persona to skills list; removed from Planned; refreshed persona-refresh principle line)
+- Updated: code/DECISIONS.md (D-027 added)
+- Updated: code/wiki/index.md (D-025, D-026, D-027 entries added under Decisions)
+
+## [2026-04-30] close-brief | CB-003 closed at tag brief/CB-003
+- Brief: ../../output/briefs/CB-003-implement-refresh-persona.md (status: promoted → closed)
+- Tag created (local): brief/CB-003 (annotated)
+- Release tag created (local): v0.8.0
+- Push: pending user instruction
+- Scope met: refresh-persona skill (SKILL.md + bundled persona.md), plugin v0.8.0 bump, README updated, workbench wiki migrated (Skills entry + design page), DECISIONS.md D-027 added
+- Scope deferred: end-to-end runtime validation in a scratch project (acceptance criteria 3–4) — structural validation passed; behavioral validation requires Yuval to mount a fresh project with the new plugin version
+
+## [2026-04-30] release | v0.8.0 (local tag)
+- Plugin: yuval-core 0.6.0 → 0.8.0 (plugin.json was stale at 0.6.0; marketplace.json was at 0.7.0; both now realigned at 0.8.0)
+- Includes brief: brief/CB-003
+- Tag: annotated, local — push pending user instruction
+- Description: ships /yuval-core:refresh-persona skill — re-syncs CLAUDE.md persona block in already-initialized projects without re-running init; aborts with guidance on missing markers (no auto-insert)

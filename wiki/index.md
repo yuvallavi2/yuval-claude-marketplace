@@ -44,6 +44,9 @@ _(Index only — entries link to `/code/DECISIONS.md#d-xxx`. The ADR log is the 
 - D-022 — `init-code` is a separate skill from `init` ([`../DECISIONS.md#d-022`](../DECISIONS.md))
 - D-023 — Briefs are the only promotion-eligible artifact ([`../DECISIONS.md#d-023`](../DECISIONS.md))
 - D-024 — Handshake commands are the only sanctioned cross-mode edges ([`../DECISIONS.md#d-024`](../DECISIONS.md))
+- D-025 — Proactive wiki protocol (CB-002) ([`../DECISIONS.md#d-025`](../DECISIONS.md))
+- D-026 — Implement refresh-persona skill (CB-003) ([`../DECISIONS.md#d-026`](../DECISIONS.md))
+- D-027 — refresh-persona: skill shape & abort-on-missing-markers ([`../DECISIONS.md#d-027`](../DECISIONS.md))
 
 ---
 
