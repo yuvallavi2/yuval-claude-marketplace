@@ -1,22 +1,22 @@
 # Next — claude-marketplace-dev (code)
 
-_Last updated: 2026-04-30_
+_Last updated: 2026-05-02_
 
 ## Next action
 
-Push the local commits and tags to GitHub: `git push origin main && git push origin brief/CB-003 v0.8.0` (and any unpushed earlier tags: `brief/CB-001`, `v0.6.0`, `brief/CB-002`, `v0.7.0`). Then schedule the deferred end-to-end runtime validation pass for CB-003 in a fresh scratch project — confirm the byte-correct in-place replacement on a marker-bearing CLAUDE.md, and confirm the abort path fires on a marker-less one.
+Push v0.8.1: `git push origin main && git push origin v0.8.1`. Then run the deferred bundled behavioral-validation pass for CB-001 / CB-002 / CB-003 in a single fresh-scratch-project session — and verify the persona v2 lands cleanly on a fresh `init` (mode-switcher diagram renders, banned-phrases list intact).
 
 ## Why
 
-CB-003 just landed: refresh-persona skill shipped, plugin bumped to v0.8.0, D-027 recorded as a sub-decision under D-026. brief/CB-003 + v0.8.0 tags created locally. Structural validation passed (files in the right place, references resolve, plugin manifest updated). Behavioral validation in a scratch project is the only acceptance gap.
+Persona v2 just landed (v0.8.1 release) — mode-switcher (brainstorm/plan/implement), visual-first rule, disagreement protocol, expanded banned-phrases. Workbench dogfooded: refresh-persona ran in place against `/Users/ylavi/claude-marketplace-dev/CLAUDE.md`, replaced the persona block byte-correct between markers. First real-world exercise of the refresh skill — passed. Behavioral validation in a fresh init is the remaining acceptance gap (along with the deferred CB-001/CB-002 validations).
 
 ## Open threads
 
-- Behavioral validation deferred for CB-001 (§10 tests 1–7), CB-002 (proactive triggers fire at the right moments), and now CB-003 (refresh-persona end-to-end). Worth bundling into a single dedicated "validation pass" session.
-- plugin.json was stale at 0.6.0 through CB-002 (marketplace.json had been bumped to 0.7.0 alone); CB-003 brings both to 0.8.0. Worth a follow-up: every brief that bumps the version should touch both files. Could be enforced by a small linter or a checklist line in the close-brief routine.
-- Bundled `persona.md` in refresh-persona's references/ retains the original "(future)" wording in its HTML comment ("refreshed by /refresh-persona (future)"). Slightly stale now that the skill exists. Defer to whichever brief next touches persona content.
-- Several unpushed tags accumulating locally (brief/CB-001, v0.6.0, brief/CB-002, v0.7.0, brief/CB-003, v0.8.0). Push them all in one go when the user is ready.
+- Validation pass still bundled and deferred (CB-001 §10 tests, CB-002 proactive triggers, CB-003 refresh-persona, now also persona v2 first-init).
+- Add a close-brief / close-release checklist line: bump both `plugin.json` and `marketplace.json` together. CB-003 had to fix the stale plugin.json from CB-002.
+- Bundled `persona.md` in both copies retains "(future)" wording in the HTML comment preamble. Cosmetic; update next time persona content is touched.
 
 ## Recent context
 
-- Last session: implementation of CB-003 (this session). Plugin: v0.6.0 plugin.json / v0.7.0 marketplace.json → v0.8.0 both. ADRs: D-027 added.
+- 2026-05-02: persona v2 shipped as v0.8.1; workbench CLAUDE.md persona block refreshed in place. Local tag v0.8.1 created; push pending.
+- 2026-04-30: CB-003 implemented (refresh-persona skill); pushed to origin same day.

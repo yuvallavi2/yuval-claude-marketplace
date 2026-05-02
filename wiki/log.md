@@ -99,3 +99,18 @@ grep "^## \[.*adr" wiki/log.md
 - Includes brief: brief/CB-003
 - Tag: annotated, local — push pending user instruction
 - Description: ships /yuval-core:refresh-persona skill — re-syncs CLAUDE.md persona block in already-initialized projects without re-running init; aborts with guidance on missing markers (no auto-insert)
+
+## [2026-05-02] push | CB-003 commit and tags pushed to origin
+- Pushed: main (d65d881), tags brief/CB-003 and v0.8.0
+- origin/main now in sync; CB-003 acceptance criterion 7 (annotated tag pushed) satisfied
+- Earlier tags (brief/CB-001, v0.6.0, brief/CB-002, v0.7.0) were already on the remote; the prior next.md hand-off had overstated the unpushed list
+
+## [2026-05-02] release | v0.8.1 — persona v2 (mode-switcher + visual-first)
+- Persona content edit, no brief, no ADR (per D-023 — content edits don't warrant briefs)
+- Updated: skills/init/references/persona.md, skills/refresh-persona/references/persona.md (verbatim copies, both)
+- New persona structure: Who I am / How I read / Mode-switcher / Disagreement protocol / Tone / Language
+- Big additions: 3-mode switcher (brainstorm/plan/implement) with trigger phrases per mode; visual-first rule (mermaid/ASCII/SVG defaults); disagreement protocol with 5 explicit don'ts; banned-phrase list extended (deep dive, going forward, etc.)
+- Cuts: generic "direct & concise", "challenge don't flatter", "ask before assuming", "one question at a time" — folded into more concrete rules
+- Plugin: 0.8.0 → 0.8.1 (both plugin.json and marketplace.json)
+- Dogfood: workbench's own /Users/ylavi/claude-marketplace-dev/CLAUDE.md persona block refreshed in place (markers preserved, surrounding content byte-identical) — first real-world exercise of /yuval-core:refresh-persona
+- Tag: v0.8.1 (annotated)
