@@ -69,8 +69,8 @@ Both can coexist on the same commit. Annotate releases with the brief tags they 
 
 ### Plugin-specific commit hygiene
 Because this repo IS the plugin's distribution surface:
-- Every change to `plugins/yuval-core/` may need a version bump in `.claude-plugin/marketplace.json`.
-- Skill or command additions are user-visible — keep `plugins/yuval-core/README.md` and `marketplace.json` description in sync.
+- Every change to `plugins/yuval-core/` may need a version bump in **both** `plugins/yuval-core/.claude-plugin/plugin.json` **and** the root `.claude-plugin/marketplace.json`. Bump them together — they must agree on `version` and `description`. (CB-002 bumped only `marketplace.json`; CB-003 had to fix the resulting drift. Don't repeat.)
+- Skill or command additions are user-visible — keep `plugins/yuval-core/README.md` and the description fields of both manifests in sync.
 - Test in a scratch project before pushing to `main` (per workbench `Final Checklist Before Shipping a New Skill or Command`).
 
 ---

@@ -114,3 +114,26 @@ grep "^## \[.*adr" wiki/log.md
 - Plugin: 0.8.0 → 0.8.1 (both plugin.json and marketplace.json)
 - Dogfood: workbench's own /Users/ylavi/claude-marketplace-dev/CLAUDE.md persona block refreshed in place (markers preserved, surrounding content byte-identical) — first real-world exercise of /yuval-core:refresh-persona
 - Tag: v0.8.1 (annotated)
+
+## [2026-05-02] session | Bundled structural validation in /tmp/persona-v2-scratch
+- Goal: consolidate the deferred validation passes for CB-001 / CB-002 / CB-003 + persona v2
+- Method: simulated each skill/command's contract step-by-step against a fresh scratch project, asserted outputs match spec
+- Results: all 6 tests passed structurally
+  - init first-run: 6 folders + CLAUDE.md w/ v2 persona body merged + wiki scaffolded ✓
+  - init-code first-run: /code/ git repo on main, 4 code files, code wiki, first commit ✓
+  - write-brief: synthetic CB-001 written ✓ (template placeholder names need documenting — see F2)
+  - promote-to-code: D-001 added, brief frozen open→promoted, both wikis logged ✓
+  - report-back: wiki page created, mirror entries on both sides w/ brief-in-flight signal ✓
+  - refresh-persona BOTH paths: marker-bearing → byte-correct in-place replacement; marker-less → exact-message abort, no write ✓
+- Behavioral validation (CB-002 proactive triggers, mode-switcher actually changing Claude's behavior) is still pending — must run in a fresh Claude session, not same-Claude-just-authored-this
+- Plugin-self-bug findings logged below (F1, F2) — fix in a follow-up patch session
+
+## [2026-05-02] adr | Validation findings (F1, F2) — not yet promoted to ADRs, pending fix decision
+- F1 — `init-code/references/code-wiki-templates/` is empty. Step 2 of init-code/SKILL.md says read-and-abort if missing; Step 6 inlines the same templates. Internal contradiction — Step 2's read-or-abort is dead code at best, broken-install false-positive at worst. Fix options: (a) move inlined templates into the empty dir and have Step 6 read them; (b) remove the empty dir and Step 2's reference to it. (b) is smaller surface and matches how the skill actually runs today.
+- F2 — `write-brief/references/brief-template.md` placeholder names are not documented in SKILL.md. Anyone simulating the skill (or porting it) has to read the template to learn the names. Fix: list canonical placeholder names in SKILL.md Step 4, or make the template self-documenting at the top.
+- Decision deferred — these are small, no-impact-yet bugs. Bundle into the next housekeeping patch.
+
+## [2026-05-02] adr | CLAUDE.md plugin-manifest sync rule codified
+- Updated /code/CLAUDE.md "Plugin-specific commit hygiene" section: every version bump must touch BOTH plugins/yuval-core/.claude-plugin/plugin.json AND root .claude-plugin/marketplace.json together
+- Origin: CB-002 bumped only marketplace.json; CB-003 had to fix the drift. Codified to prevent recurrence.
+- No D-xxx — this is a workflow/discipline rule, not a structural decision.
