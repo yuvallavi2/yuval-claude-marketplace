@@ -374,3 +374,37 @@ Both can coexist on the same commit. Neither replaces the other. Release annotat
 - *Flat command file with persona content inlined* — duplicates the persona text inside a markdown file's prose, defeats the purpose of having a versioned `references/persona.md`.
 - *Auto-insert markers around the existing persona block* — heuristic placement on legacy projects has no safe rule. Easier to ask the user to do the one-time cleanup than to maintain a heuristic that gets wrong on edge cases.
 - *Insert markers at a fixed position (e.g., end of `## Who I Am Working With`)* — same problem as auto-insertion plus brittleness to template evolution.
+
+---
+
+## D-028 — Project SPIRIT contract (CB-004)
+
+**Decision:** Implement the scope captured in [`../output/briefs/CB-004-spirit-contract.md`](../output/briefs/CB-004-spirit-contract.md). Five structural commitments in one ADR:
+
+**(a) Project spirit lives in `/code/SPIRIT.md`, single source of truth.** Atmosphere — interaction shape, voice/tone, anti-shape, silent state, tactile contract, default posture, the one moment, plus a reference scenario — is project-level, not per-brief. SPIRIT.md is the only authoritative location. The format is human prose; no schema validation.
+
+**(b) Authored once via `write-brief` on the first brief; refreshed via a dedicated skill.** `write-brief` detects whether `/code/SPIRIT.md` exists at the workspace root. Absent → walks the 8 spirit prompts inline before Goal, writes the file, continues. Present → asks one question (*"Any spirit adjustment for this brief?"* — default no). The dedicated `refresh-spirit` skill mirrors `refresh-persona` (D-026/D-027): re-walks the 8 prompts pre-filled with current SPIRIT.md, shows a diff, overwrites.
+
+**(c) Briefs reference SPIRIT.md; they do not redefine it.** The brief template's `## Spirit & Texture` section defaults to `Inherits /code/SPIRIT.md.` Per-brief overrides are a single optional paragraph the author opts into; anything beyond that signals SPIRIT.md itself should be refreshed.
+
+**(d) `promote-to-code` refuses promotion when `/code/SPIRIT.md` is missing entirely.** Spirit must be authored at the project level before any brief can promote. The refusal message points at `write-brief` (which authors SPIRIT.md on first invocation) or `refresh-spirit` directly.
+
+**(e) The application owns its own coding-agent persona and pre-flight; yuval-core stays out of that lane.** The Mira-style pre-flight checklist (locate Reference Scenario / Interaction Shape / Anti-Shape / Silent State / Tactile Contract → restate Interaction Shape + one sentence of Reference Scenario back to the user → list three UI patterns it will NOT use) is documented in the marketplace README as a **recommended** pattern an application's coding-agent instructions may adopt. Yuval-core does NOT auto-inject it into any application's `/code/CLAUDE.md` via `init-code` or any other skill. Yuval-core owns the bridge between ideation and code; the application owns its coding behavior.
+
+**Reasoning:** The Mira project shipped a brief that listed capabilities and acceptance criteria for a "voice-first ambient agent." The coding agent built a form-first UI — capabilities were satisfied, soul was lost. Diagnosis: briefs that encode *what* but not *how it must feel* default to the most familiar UX shape. Two earlier framings of the fix were rejected before landing here:
+- *Pre-flight checklist shipped via `init-code`.* Wrong altitude: yuval-core is a framework of work, not the application's coding framework. Each application's `/code/CLAUDE.md` is app-owned territory.
+- *Spirit & Texture authored per brief.* Wrong altitude in the other direction: project atmosphere is set once, not redefined per brief. Per-brief authoring would force the same eight answers across every brief in the project.
+
+Final altitude: project-level SPIRIT.md as single source of truth, briefs reference it, application owns its own coding-agent persona. This keeps yuval-core's lane (the bridge) clean and pushes responsibility for the application's coding agent back to the application.
+
+**Brief reference:** [`../output/briefs/CB-004-spirit-contract.md`](../output/briefs/CB-004-spirit-contract.md) — promoted 2026-05-03, status `promoted` post-promotion. The brief is immutable post-promotion and serves as the as-of-promotion snapshot of scope.
+
+**Related:** [D-007](#d-007) (persona contract & marker pair — refresh-spirit mirrors the deferred-half pattern that became D-026), [D-016](#d-016) (each skill carries its own `references/`; cross-skill drift tolerated — applies to `spirit-prompts.md` duplication between `write-brief` and `refresh-spirit`), [D-023](#d-023) (briefs are the only promotion-eligible artifact — SPIRIT.md sits one altitude up but is reachable from every brief), [D-026](#d-026) / [D-027](#d-027) (refresh-persona pattern — refresh-spirit mirrors skill shape, abort-on-missing, diff-then-overwrite).
+
+**Rejected alternatives:**
+- *Spirit prompts walked per brief.* Forces the same eight answers across every brief in a project. Rejected — atmosphere is project-level.
+- *Pre-flight injected into `init-code`'s scaffolded `/code/CLAUDE.md`.* Crosses the framework-vs-application boundary. Rejected — yuval-core stays out of the application's coding-agent lane.
+- *Schema-validated SPIRIT.md (structured fields).* The eight prompts would map to YAML/JSON fields; tooling could enforce shape. Rejected — atmosphere is human prose by nature; schema would deform it. Validation = "exists with content."
+- *Single shared `spirit-prompts.md` referenced by both `write-brief` and `refresh-spirit`.* Avoids duplication but breaks D-016's skill-independence rule. Rejected — drift is tolerated.
+- *`promote-to-code` warns on missing SPIRIT.md instead of refusing.* Soft enforcement. Rejected — the whole point of D-028 is that spirit must precede promotion; a warning is ignorable.
+- *(see brief's `## Out of scope` for further excluded scope.)*

@@ -137,3 +137,8 @@ grep "^## \[.*adr" wiki/log.md
 - Updated /code/CLAUDE.md "Plugin-specific commit hygiene" section: every version bump must touch BOTH plugins/yuval-core/.claude-plugin/plugin.json AND root .claude-plugin/marketplace.json together
 - Origin: CB-002 bumped only marketplace.json; CB-003 had to fix the drift. Codified to prevent recurrence.
 - No D-xxx — this is a workflow/discipline rule, not a structural decision.
+
+## [2026-05-03] promote | CB-004 → D-028
+- Brief: ../../output/briefs/CB-004-spirit-contract.md
+- ADR: D-028 in DECISIONS.md (5 substantive points: SPIRIT.md as project-level SoT; authored once + refreshable; briefs reference don't redefine; promote-to-code refuses on missing; application owns its own coding-agent persona)
+- Status: ready for implementation
