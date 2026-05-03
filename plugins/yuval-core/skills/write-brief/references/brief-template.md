@@ -22,6 +22,10 @@ _Created: {{DATE}} | Status: open | ADR: TBD_
 
 {{ACCEPTANCE}}
 
+## Spirit & Texture
+
+{{SPIRIT_AND_TEXTURE}}
+
 ## Status log
 
 - {{DATE}}: created

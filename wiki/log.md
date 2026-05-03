@@ -142,3 +142,25 @@ grep "^## \[.*adr" wiki/log.md
 - Brief: ../../output/briefs/CB-004-spirit-contract.md
 - ADR: D-028 in DECISIONS.md (5 substantive points: SPIRIT.md as project-level SoT; authored once + refreshable; briefs reference don't redefine; promote-to-code refuses on missing; application owns its own coding-agent persona)
 - Status: ready for implementation
+
+## [2026-05-03] implement | CB-004 — SPIRIT contract shipped
+- Created: plugins/yuval-core/skills/refresh-spirit/SKILL.md, plugins/yuval-core/skills/refresh-spirit/references/spirit-prompts.md (verbatim copy of write-brief's spirit-prompts.md at ship time per D-016), plugins/yuval-core/skills/write-brief/references/spirit-prompts.md (the 8 prompts — Reference Scenario, Interaction Shape, Voice/Tone, Anti-Shape, Silent State, Tactile Contract, Default Posture, The One Moment, plus n/a-is-valid pattern), /code/SPIRIT.md (workbench dogfood: n/a — pure infrastructure tooling)
+- Modified: plugins/yuval-core/skills/write-brief/SKILL.md (Step 1.5 SPIRIT gate with absent / present / no-/code/-yet paths; {{SPIRIT_AND_TEXTURE}} template substitution); plugins/yuval-core/skills/write-brief/references/brief-template.md (## Spirit & Texture section after ## Acceptance); plugins/yuval-core/commands/promote-to-code.md (refusal case 7: missing SPIRIT.md); plugins/yuval-core/.claude-plugin/plugin.json (0.8.1 → 0.9.0; refresh-spirit/spirit/atmosphere keywords; description refreshed); .claude-plugin/marketplace.json (same bump in lockstep per workbench sync rule); plugins/yuval-core/README.md (refresh-spirit in skills, SPIRIT contract subsection, recommended app-side pre-flight subsection, framework-principles bullet for spirit altitude)
+- Updated: code/wiki/index.md (Modules entry for skill-refresh-spirit; Patterns entry for concept-spirit-contract; D-028 in Decisions index)
+- Created: code/wiki/pages/skill-refresh-spirit.md (module page — implementation history & gotchas), code/wiki/pages/concept-spirit-contract.md (pattern page — altitude rule + n/a-is-valid)
+- Ideation-side artifacts (outside this repo): /output/briefs/CB-004-spirit-contract.md frozen (open → promoted → closed), /wiki/log.md mirror promote+close entries, /wiki/index.md (CB-004 closed, Skills + Concepts updated), /wiki/pages/skill-refresh-spirit.md + concept-spirit-contract.md (design-evolution view), /wiki/pages/session-2026-05-03-cb-004-spirit-contract.md (session page), /wiki/next.md hand-off
+- Structural validation: passed all 8 acceptance criteria from the brief (AC9 behavioral validation deferred to fresh-Claude-session pass; AC10 tags applied at this commit)
+
+## [2026-05-03] close-brief | CB-004 closed at tag brief/CB-004
+- Brief: ../../output/briefs/CB-004-spirit-contract.md (status: promoted → closed)
+- Tag created (local): brief/CB-004 (annotated)
+- Release tag created (local): v0.9.0
+- Push: pending user instruction
+- Scope met: refresh-spirit skill (SKILL.md + bundled prompts), write-brief SPIRIT step, brief-template ## Spirit & Texture, promote-to-code refusal on missing SPIRIT.md, plugin v0.9.0 bump, README updated (SPIRIT contract + recommended app-side pre-flight), workbench dogfood /code/SPIRIT.md (n/a content), DECISIONS.md D-028 added, code-wiki Modules + Patterns + D-028 entries, two design pages
+- Scope deferred: end-to-end behavioral validation in a scratch project (acceptance criterion 9) — same fresh-Claude-session-required gap as CB-001/2/3 closure. Bundle into the deferred behavioral-validation pass.
+
+## [2026-05-03] release | v0.9.0 (local tag)
+- Plugin: yuval-core 0.8.1 → 0.9.0 (plugin.json + marketplace.json in lockstep)
+- Includes brief: brief/CB-004
+- Tag: annotated, local — push pending user instruction
+- Description: ships /code/SPIRIT.md as project-level atmosphere SoT (D-028); /yuval-core:refresh-spirit skill (mirrors refresh-persona pattern); write-brief gains 8-prompt SPIRIT walk on first invocation in a project + 1-question adjustment on subsequent; brief template gains ## Spirit & Texture section; promote-to-code refuses on missing SPIRIT.md; README documents SPIRIT contract + recommended (not shipped) app-side pre-flight pattern

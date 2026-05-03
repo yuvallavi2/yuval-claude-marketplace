@@ -16,14 +16,14 @@ _None yet — see `plugins/yuval-core/README.md` for the public-facing descripti
 ## Modules
 _(One page per skill or command, tracking implementation history and gotchas. Distinct from the `Skills`/`Commands` categories in the ideation wiki, which track design evolution.)_
 
-_None yet._
+- [skill-refresh-spirit](pages/skill-refresh-spirit.md) — re-walk 8 spirit prompts and overwrite `/code/SPIRIT.md` (CB-004 / D-028, v0.9.0).
 
 ---
 
 ## Patterns
 _(Recurring conventions across skills: additive-merge discipline, deprecated-sections channel, references/ folder layout, etc.)_
 
-_None yet._
+- [concept-spirit-contract](pages/concept-spirit-contract.md) — project-vs-brief altitude rule for atmosphere; `n/a-is-valid`; the SPIRIT.md SoT pattern (CB-004 / D-028).
 
 ---
 
@@ -47,6 +47,7 @@ _(Index only — entries link to `/code/DECISIONS.md#d-xxx`. The ADR log is the 
 - D-025 — Proactive wiki protocol (CB-002) ([`../DECISIONS.md#d-025`](../DECISIONS.md))
 - D-026 — Implement refresh-persona skill (CB-003) ([`../DECISIONS.md#d-026`](../DECISIONS.md))
 - D-027 — refresh-persona: skill shape & abort-on-missing-markers ([`../DECISIONS.md#d-027`](../DECISIONS.md))
+- D-028 — Project SPIRIT contract (CB-004) ([`../DECISIONS.md#d-028`](../DECISIONS.md))
 
 ---
 

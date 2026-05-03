@@ -20,6 +20,67 @@ A brief is the **contract artifact** between ideation and code. It is the only a
 
 1. Confirm `/output/briefs/` exists. If not, create it (`mkdir -p /output/briefs`). Note: the ideation `init` skill (v0.6.0+) creates this folder by default; absence implies an older project.
 2. Read `${SKILL_DIR}/references/brief-template.md`. If missing, abort — broken plugin install.
+3. Read `${SKILL_DIR}/references/spirit-prompts.md`. If missing, abort — broken plugin install.
+
+## Step 1.5 — SPIRIT.md gate (D-028)
+
+Before authoring the brief, the project's spirit must be set. SPIRIT.md is the **project-level** single source of truth for atmosphere; it is authored once on the first brief and refreshed via `/yuval-core:refresh-spirit` if it ever needs to evolve.
+
+Check whether `/code/SPIRIT.md` exists at the workspace root.
+
+### 1.5.a — Absent path (first brief in this project)
+
+`/code/SPIRIT.md` does not exist. Walk the 8 spirit prompts inline, **one at a time**, before any of the brief authoring questions below. The full prompts and example answers are bundled at `${SKILL_DIR}/references/spirit-prompts.md` — read it now and use the eight question lines verbatim.
+
+The 8 prompts, in order:
+
+1. Reference Scenario
+2. Interaction Shape
+3. Voice / Tone samples
+4. Anti-Shape
+5. Silent State
+6. Tactile Contract
+7. Default Posture
+8. The One Moment
+
+Rules for the walk:
+- Ask one prompt per turn. Do not stack prompts.
+- `n/a` is a valid answer for any prompt. Don't push back on `n/a` — the prompts are universal but not every project has user-facing surface. Pure-infrastructure projects answer `n/a` to all 8.
+- If all 8 answers are `n/a`, write `/code/SPIRIT.md` as a single line:
+  ```
+  n/a — pure infrastructure project. No user surface, no atmosphere to transmit.
+  ```
+- Otherwise, write `/code/SPIRIT.md` with one `## <prompt name>` heading per non-`n/a` answer, with the user's answer underneath. Skip prompts answered `n/a`. Top of file:
+  ```markdown
+  # SPIRIT — <project name>
+
+  _Authored: YYYY-MM-DD via `/yuval-core:write-brief` on the first brief. Refresh via `/yuval-core:refresh-spirit`._
+
+  <body: one section per non-n/a prompt>
+  ```
+- After the file is written, confirm to the user: *"`/code/SPIRIT.md` written. Continuing with the brief — its `## Spirit & Texture` section will read `Inherits /code/SPIRIT.md.`"* Then continue to Step 2.
+
+### 1.5.b — Present path (subsequent briefs in this project)
+
+`/code/SPIRIT.md` exists. Ask **one** question:
+
+> *"Any spirit adjustment for this brief? (default: no)"*
+
+- **Default / "no" / silence** → set the brief's `## Spirit & Texture` section to `Inherits /code/SPIRIT.md.` (the template default; no special handling needed).
+- **"yes" + an override paragraph** → capture the one-paragraph override. Set the brief's `## Spirit & Texture` section to:
+  ```markdown
+  Inherits [/code/SPIRIT.md](../../code/SPIRIT.md), except for this brief:
+
+  <one-paragraph override from the user>
+  ```
+
+If the user's override balloons past one paragraph, gently note: *"That's substantial — sounds like SPIRIT.md itself should evolve. I'll capture this short for the brief; consider running `/yuval-core:refresh-spirit` after."* Don't block on it; capture what fits and continue.
+
+Continue to Step 2.
+
+### 1.5.c — Workspace lacks `/code/`
+
+If `/code/` does not exist at all (the project hasn't been promoted to code yet), skip the gate — the brief is being authored before `init-code`. Note to the user: *"`/code/` does not exist yet, so SPIRIT.md authoring is deferred. After you run `/yuval-core:init-code`, the next `/yuval-core:write-brief` invocation will walk the spirit prompts before that brief is authored."* Then continue to Step 2 with the brief's `## Spirit & Texture` section omitted (the brief will be edited or re-authored once `/code/` exists).
 
 ## Step 2 — Compute the next CB-XXX number
 
@@ -88,6 +149,10 @@ Substitute the captured values into `references/brief-template.md`:
 - `{{OUT_OF_SCOPE_ITEMS}}` → the markdown bullet list
 - `{{REFERENCES}}` → the markdown link list
 - `{{ACCEPTANCE}}` → the acceptance criteria
+- `{{SPIRIT_AND_TEXTURE}}` → the contents of the brief's `## Spirit & Texture` section, computed in Step 1.5:
+  - **Default (no per-brief adjustment, or Step 1.5.a just authored SPIRIT.md):** `Inherits [/code/SPIRIT.md](../../code/SPIRIT.md).`
+  - **With override:** `Inherits [/code/SPIRIT.md](../../code/SPIRIT.md), except for this brief:\n\n<override paragraph>`
+  - **No `/code/` yet (Step 1.5.c):** omit the section header and body — leave `{{SPIRIT_AND_TEXTURE}}` as an empty string and remove the `## Spirit & Texture` header from the rendered brief.
 
 Write to `/output/briefs/CB-XXX-<slug>.md`. Status field is `open`. ADR field is `TBD`.
 
@@ -112,3 +177,4 @@ Print the **path** (clickable for the user) and a one-line summary. Do not paste
 - **Edit before promotion:** Briefs stay `open` and editable until `promote-to-code` runs. Encourage the user to refine before promoting — promotion freezes the brief.
 - **Reference, don't inline:** A brief should link to specs by relative path, not inline the spec content. Keeps briefs short and maintainable.
 - **No automatic logging:** Authoring a brief does not append to `/wiki/log.md`. Only promotion does. The brief file's existence in `/output/briefs/` is the record. (Optional: if the user explicitly asks, add a `brief` log entry — but it's not the default.)
+- **SPIRIT.md altitude (D-028):** Spirit is project-level, set once. The first brief in a project authors SPIRIT.md inline; every subsequent brief inherits it with at most a one-paragraph adjustment. If a brief's adjustment is substantial enough to warrant more than a paragraph, that's a signal the project's SPIRIT.md itself should evolve — point the user at `/yuval-core:refresh-spirit` rather than letting the override grow.

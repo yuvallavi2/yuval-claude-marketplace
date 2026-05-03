@@ -12,9 +12,29 @@ Core workspace plugin for Yuval's Claude setup. Two-mode workspace: ideation at 
 ### Code workspace (opt-in, v0.6.0+)
 
 - **`init-code` skill** — Scaffolds `/code/` as a git repo with its own `CLAUDE.md`, `README.md`, `DECISIONS.md`, `.gitignore`, and a self-contained code wiki. Detects an existing `/code/.git/` (e.g., a prior clone) and additively scaffolds without re-running `git init`.
-- **`write-brief` skill** — Authors a code brief (`CB-XXX`) interactively. Walks goal → scope → out-of-scope → references → acceptance. Briefs are the only promotion-eligible artifact.
-- **`/yuval-core:promote-to-code CB-XXX`** — Handshake command (ideation → code). Adds an ADR to `/code/DECISIONS.md`, freezes the brief in place, logs both wikis. Refuses non-briefs and already-promoted briefs.
+- **`write-brief` skill** — Authors a code brief (`CB-XXX`) interactively. On the first brief in a project (when `/code/SPIRIT.md` is absent), walks 8 spirit prompts inline before Goal and writes SPIRIT.md. On subsequent briefs, asks one question for any per-brief spirit adjustment (default: no). Then walks goal → scope → out-of-scope → references → acceptance. Briefs are the only promotion-eligible artifact.
+- **`refresh-spirit` skill** (v0.9.0+) — Re-walks the 8 spirit prompts pre-filled with the project's current `/code/SPIRIT.md` content, shows a diff, overwrites. Mirrors `refresh-persona` (D-026/D-027): aborts cleanly when SPIRIT.md is absent. Use when project atmosphere has evolved enough that a per-brief override would balloon past one paragraph.
+- **`/yuval-core:promote-to-code CB-XXX`** — Handshake command (ideation → code). Adds an ADR to `/code/DECISIONS.md`, freezes the brief in place, logs both wikis. Refuses non-briefs, already-promoted briefs, and projects where `/code/SPIRIT.md` is missing entirely (per D-028 — spirit must precede promotion).
 - **`/yuval-core:report-back <finding>`** — Reverse handshake (code → ideation). Logs both wikis; optionally touches a `/wiki/pages/` page when the finding is durable.
+
+#### The SPIRIT contract (v0.9.0+, D-028)
+
+`/code/SPIRIT.md` is the project-level single source of truth for atmosphere — interaction shape, voice/tone, anti-shape, silent state, tactile contract, default posture, the one moment, plus a reference scenario. The 8 prompts are bundled as `references/spirit-prompts.md` inside both `write-brief` and `refresh-spirit`.
+
+- **Authored once.** First `write-brief` invocation in a project walks all 8 prompts inline, writes `/code/SPIRIT.md`, then continues with the brief.
+- **Refreshed deliberately.** `refresh-spirit` is the dedicated path for evolving SPIRIT.md after authoring.
+- **Briefs reference, don't redefine.** The brief template's `## Spirit & Texture` section defaults to `Inherits /code/SPIRIT.md.` Per-brief overrides are a single optional paragraph.
+- **Promotion gate.** `promote-to-code` refuses if `/code/SPIRIT.md` is missing. Pure-infrastructure projects with no user surface answer all 8 prompts `n/a` — the resulting one-line SPIRIT.md (`n/a — pure infrastructure project. ...`) passes the gate.
+
+The contract addresses the failure mode where a brief encodes capabilities + acceptance but not interaction shape, and a coding agent fills the gap with the most familiar wrong UX shape (e.g., a form-first UI for a voice-first product). Spirit must be transmitted explicitly across the ideation→code boundary.
+
+#### Recommended app-side pre-flight (not shipped — D-028 part e)
+
+Per D-028, yuval-core does not ship coding-agent persona or pre-flight logic into application `/code/CLAUDE.md` files via `init-code` or any other skill — that lane belongs to the application. The following pattern is **recommended** for an application's coding-agent instructions to adopt voluntarily:
+
+> Before writing user-facing code, locate the project's `/code/SPIRIT.md`. Restate the **Interaction Shape** and one sentence of the **Reference Scenario** back to the user as part of the implementation plan. List three UI patterns (drawn from **Anti-Shape**) the agent will NOT use. If voice/tone samples are absent and the product has an agent surface, ask for at least three before writing copy.
+
+This pre-flight is the smallest item that would have caught the Mira-project misfire (a "voice-first ambient agent" brief that was implemented as a form-first UI). Each application decides whether to adopt it; yuval-core stays out of the application's coding behavior.
 
 ## Framework principles
 
@@ -26,6 +46,7 @@ Core design commitments across this plugin. Read these before changing `init` or
 - **Briefs are the only cross-mode promotion artifact.** Specs, reports, and design docs in `/output/` are reference material. Briefs in `/output/briefs/` are commitments. Only briefs go through `promote-to-code` and become ADRs in `/code/DECISIONS.md`. See D-023.
 - **Handshake commands are the only sanctioned cross-mode edges.** `promote-to-code` (ideation → code) and `report-back` (code → ideation) are the only two paths that mutate state across the boundary. Everything else stays within its own mode. See D-024.
 - **Persona refresh is a deliberate act.** Init never touches content between `<!-- PERSONA:START -->` and `<!-- PERSONA:END -->`. Use `/yuval-core:refresh-persona` to pull updates into existing projects.
+- **Spirit lives at the project level, not per brief (D-028).** `/code/SPIRIT.md` is the project's single source of truth for atmosphere. `write-brief` authors it on the first brief in a project; `refresh-spirit` evolves it; briefs reference it with at most a one-paragraph override. `promote-to-code` refuses on missing SPIRIT.md. Application coding-agent persona is the application's lane, not yuval-core's.
 
 ## How it reads the marketplace
 

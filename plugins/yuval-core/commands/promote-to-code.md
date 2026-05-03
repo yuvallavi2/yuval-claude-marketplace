@@ -27,6 +27,8 @@ Before touching any file, validate the request. Refuse with a clear message in a
 
 6. **Brief lacks required sections.** Verify the brief has `## Goal`, `## Scope`, `## Acceptance`. If any are missing, refuse: *"`CB-NNN` is missing `<section>`. Edit the brief to complete it before promoting."*
 
+7. **`/code/SPIRIT.md` is missing entirely.** Per D-028, project spirit must be authored at the project level before any brief can be promoted. If `/code/SPIRIT.md` does not exist, refuse: *"`/code/SPIRIT.md` does not exist. Spirit must be authored at the project level before any brief can be promoted. Run `/yuval-core:write-brief` (which will walk the spirit prompts on first invocation) or `/yuval-core:refresh-spirit` directly."* This check applies to every brief, including pure-infrastructure projects — the `n/a — pure infrastructure project. ...` form of SPIRIT.md is acceptable and passes the check, but a missing file does not.
+
 If all checks pass, proceed with the steps below — **do not** ask the user to confirm. Promotion is the explicit confirmation; the command's contract is to execute it.
 
 ---
