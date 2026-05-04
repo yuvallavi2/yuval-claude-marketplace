@@ -31,9 +31,10 @@ Create these subfolders in the project root if they don't already exist:
 /output/briefs/
 /wiki/
 /wiki/pages/
+/wiki/ideation/
 ```
 
-Use `mkdir -p` via Bash to create them. `/wiki/pages/` is where individual wiki pages live; `/wiki/` itself holds `index.md` and `log.md`. `/output/briefs/` is the home for code briefs (`CB-XXX`) — the only artifact promoted into `/code/` via `/yuval-core:promote-to-code`. The folder is created on every project (always-on) so a project can author its first brief without a separate scaffolding step, even if the project never grows a `/code/` workspace.
+Use `mkdir -p` via Bash to create them. `/wiki/pages/` is where individual wiki pages live; `/wiki/` itself holds `index.md`, `log.md`, the generative-layer files (`vision.md`, `goals.md`, `spirit-signals.md`, `backlog.md`), and `ideation/` (the sub-folder for half-formed-idea files). `/output/briefs/` is the home for code briefs (`CB-XXX`) — the only artifact promoted into `/code/` via `/yuval-core:promote-to-code`. Both `/output/briefs/` and the wiki generative layer are created on every project (always-on) so a project can author its first brief and capture intent/atmosphere from day one, even if it never grows a `/code/` workspace.
 
 ## Step 2 — Detect Project Info
 
@@ -53,15 +54,22 @@ Determine these values from the project folder:
 
 - **PROJECT_GOAL**: Infer a one-line goal from the folder name, or default to `TBD — update before first task`
 
-## Step 3 — Read the Template, Persona, and Memory Protocol
+## Step 3 — Read the Template, Persona, Memory Protocol, and Wiki Templates
 
-Three files are bundled with this skill in the `references/` folder. Version control and updates happen through the plugin's git repo — edits are made there, pushed, and propagated via plugin updates.
+Several files are bundled with this skill in the `references/` folder. Version control and updates happen through the plugin's git repo — edits are made there, pushed, and propagated via plugin updates.
 
 **Template path:** `${SKILL_DIR}/references/claude-template.md`
 **Persona path:** `${SKILL_DIR}/references/persona.md`
 **Memory protocol path:** `${SKILL_DIR}/references/memory-protocol.md`
+**Wiki index template path:** `${SKILL_DIR}/references/wiki-index-template.md`
+**Generative-layer wiki templates:** `${SKILL_DIR}/references/wiki-templates/`
+- `vision.md`
+- `goals.md`
+- `spirit-signals.md`
+- `backlog.md`
+- `ideation-readme.md`
 
-Read all three files using the Read tool.
+Read all of them using the Read tool.
 
 **If any file is missing:** This indicates a broken plugin installation. Warn the user and stop.
 
@@ -138,45 +146,24 @@ The `memory-protocol.md` reference file is the canonical memory protocol. It is 
 
 ### `/wiki/index.md` — create-if-missing
 
-If `/wiki/index.md` does not exist, create it with the template below. If it already exists, leave it alone — the wiki maintainer owns it.
+If `/wiki/index.md` does not exist, write `${SKILL_DIR}/references/wiki-index-template.md` with `{{PROJECT_NAME}}` substituted. The bundled template covers all three layers — generative, state, and retrospective — with the standard category headings under each. If `/wiki/index.md` already exists, leave it alone; the wiki maintainer owns it. (Older projects that predate the generative layer can be migrated by hand or by deleting their `index.md` and re-running init — the additive-merge pattern used for CLAUDE.md is not applied to `index.md` because the user-curated catalog and the bundled headings interleave too freely.)
 
-```markdown
-# Wiki Index — [PROJECT_NAME]
+### `/wiki/vision.md`, `/wiki/goals.md`, `/wiki/spirit-signals.md`, `/wiki/backlog.md` — create-if-missing (each)
 
-The content catalog for this project's wiki. Read this first when answering any question — it points to the relevant pages. One-line summaries only; drill into individual pages for detail.
+For each of the four files, check whether it exists in `/wiki/`. If absent, write the corresponding template from `${SKILL_DIR}/references/wiki-templates/` with `{{PROJECT_NAME}}` substituted:
 
-> **Current next action:** see [next.md](next.md) — the single-file session hand-off, refreshed each session.
+- `/wiki/vision.md` ← `wiki-templates/vision.md`
+- `/wiki/goals.md` ← `wiki-templates/goals.md`
+- `/wiki/spirit-signals.md` ← `wiki-templates/spirit-signals.md`
+- `/wiki/backlog.md` ← `wiki-templates/backlog.md`
 
-## Briefs
-_(Code briefs (`CB-XXX`) authored in `/output/briefs/`. Each entry shows current lifecycle status — `(open)`, `(promoted: D-yyy)`, or `(closed: brief/CB-XXX)`. Empty until the project authors its first brief.)_
+If a file already exists, leave it alone. **Track for each file** whether it was created this run (`created`) or skipped (`already present`); pass through to the `log.md` template-sync entry and the final confirmation in Step 7.
 
-_None yet._
+These four files are the **generative layer** introduced by D-029. They give vision / goals / atmosphere-signals / backlog a stable home before they get committed into canonical artifacts. The formats inside each template encode the contracts that downstream skills (per CB-006) will read.
 
-## Sources
-_(Raw sources that have been ingested from /input/. Each entry links to a summary page in /wiki/pages/.)_
+### `/wiki/ideation/README.md` and `/wiki/ideation/.gitkeep` — create-if-missing (each)
 
-_None yet._
-
-## Entities
-_(People, companies, products, systems that appear across multiple sources.)_
-
-_None yet._
-
-## Concepts
-_(Ideas, frameworks, recurring themes. One page per concept.)_
-
-_None yet._
-
-## Decisions
-_(Decisions made during the project, with rationale. One page per decision.)_
-
-_None yet._
-
-## Open Questions
-_(Unresolved questions to revisit as more sources arrive.)_
-
-_None yet._
-```
+If `/wiki/ideation/README.md` does not exist, write `${SKILL_DIR}/references/wiki-templates/ideation-readme.md` with `{{PROJECT_NAME}}` substituted to `/wiki/ideation/README.md`. If `/wiki/ideation/.gitkeep` does not exist, create it as an empty file (so the folder is tracked even when empty). Track each as `created` / `already present`.
 
 ### `/wiki/log.md` — create-if-missing, else append
 
@@ -192,10 +179,11 @@ Append-only chronological record of ingests, queries, lint passes, and sessions.
 ---
 
 ## [DATE] init | Project initialized
-- Folders created: /input /in-progress /output /output/briefs /wiki /wiki/pages
+- Folders created: /input /in-progress /output /output/briefs /wiki /wiki/pages /wiki/ideation
 - CLAUDE.md configured from template
 - Persona injected from persona.md
-- Wiki scaffolded (memory-protocol.md, index.md, log.md, next.md)
+- Wiki state layer scaffolded (memory-protocol.md, index.md, log.md, next.md)
+- Wiki generative layer scaffolded (vision.md, goals.md, spirit-signals.md, backlog.md, ideation/README.md)
 - Status: Ready for first task
 ```
 
@@ -209,6 +197,7 @@ If `/wiki/log.md` already exists, append a `template-sync` entry. Fill in the `n
 - Deprecated sections removed: [list or "none"]
 - next.md: [created (back-filled for pre-continuity project) | already present]
 - memory-protocol.md: [created | refreshed | already present]
+- Generative layer: vision.md=[created | already present], goals.md=[created | already present], spirit-signals.md=[created | already present], backlog.md=[created | already present], ideation/README.md=[created | already present]
 - Status: Instructions refreshed
 ```
 
@@ -259,16 +248,17 @@ To ingest a file into the wiki, drop it here and say "ingest [filename]" or "ing
 
 ```
 Project initialized: [Project Name]
-Folders: /input /in-progress /output /output/briefs /wiki
+Folders: /input /in-progress /output /output/briefs /wiki /wiki/pages /wiki/ideation
 CLAUDE.md configured (template: skills/init/references/claude-template.md)
 Persona injected (source: skills/init/references/persona.md)
-Wiki scaffolded (memory-protocol.md + index.md + log.md + next.md)
+Wiki state layer scaffolded (memory-protocol.md + index.md + log.md + next.md)
+Wiki generative layer scaffolded (vision.md + goals.md + spirit-signals.md + backlog.md + ideation/README.md)
 next.md: created
 memory-protocol.md: created
 Ready — drop files into /input and describe your first task. To scope code work, run `/yuval-core:write-brief`.
 ```
 
-**Re-run** — respond with the form below. Fill the `next.md:` line with `created (back-filled for pre-continuity project)` if the file was created this run, otherwise `already present`. Fill the `memory-protocol.md:` line with one of `created`, `refreshed`, or `already present` based on the flag tracked in Step 6. Fill `Deprecated sections removed` with the comma-separated list from Step 5.5, or `none` if nothing was pruned. No bracket-OR notation in the output.
+**Re-run** — respond with the form below. Fill the `next.md:` line with `created (back-filled for pre-continuity project)` if the file was created this run, otherwise `already present`. Fill the `memory-protocol.md:` line with one of `created`, `refreshed`, or `already present` based on the flag tracked in Step 6. Fill each generative-layer slot with `created` (back-filled for pre-D-029 project) or `already present`. Fill `Deprecated sections removed` with the comma-separated list from Step 5.5, or `none` if nothing was pruned. No bracket-OR notation in the output.
 
 ```
 Project updated: [Project Name]
@@ -279,4 +269,5 @@ Deprecated sections removed: [list or "none"]
 Wiki log entry appended
 next.md: [created (back-filled for pre-continuity project) | already present]
 memory-protocol.md: [created | refreshed | already present]
+Generative layer: vision.md=[…], goals.md=[…], spirit-signals.md=[…], backlog.md=[…], ideation/README.md=[…]
 ```

@@ -17,6 +17,7 @@ _None yet — see `plugins/yuval-core/README.md` for the public-facing descripti
 _(One page per skill or command, tracking implementation history and gotchas. Distinct from the `Skills`/`Commands` categories in the ideation wiki, which track design evolution.)_
 
 - [skill-refresh-spirit](pages/skill-refresh-spirit.md) — re-walk 8 spirit prompts and overwrite `/code/SPIRIT.md` (CB-004 / D-028, v0.9.0).
+- [skill-init](pages/skill-init.md) — scaffold a new ideation project; v0.10.0 adds three-layer wiki scaffolding (CB-005 / D-029).
 
 ---
 
@@ -24,6 +25,7 @@ _(One page per skill or command, tracking implementation history and gotchas. Di
 _(Recurring conventions across skills: additive-merge discipline, deprecated-sections channel, references/ folder layout, etc.)_
 
 - [concept-spirit-contract](pages/concept-spirit-contract.md) — project-vs-brief altitude rule for atmosphere; `n/a-is-valid`; the SPIRIT.md SoT pattern (CB-004 / D-028).
+- [concept-wiki-workshop](pages/concept-wiki-workshop.md) — workshop stance over single-source-of-truth; three-layer wiki (generative / retrospective / state); proactive triggers; CB-006 query contracts (CB-005 / D-029).
 
 ---
 
@@ -48,6 +50,8 @@ _(Index only — entries link to `/code/DECISIONS.md#d-xxx`. The ADR log is the 
 - D-026 — Implement refresh-persona skill (CB-003) ([`../DECISIONS.md#d-026`](../DECISIONS.md))
 - D-027 — refresh-persona: skill shape & abort-on-missing-markers ([`../DECISIONS.md#d-027`](../DECISIONS.md))
 - D-028 — Project SPIRIT contract (CB-004) ([`../DECISIONS.md#d-028`](../DECISIONS.md))
+- D-029 — Wiki 2.0: workshop layer (CB-005) ([`../DECISIONS.md#d-029`](../DECISIONS.md))
+- D-030 — Wiki-aware skills (CB-006, pending implementation) ([`../DECISIONS.md#d-030`](../DECISIONS.md))
 
 ---
 

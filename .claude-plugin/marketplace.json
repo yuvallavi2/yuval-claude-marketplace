@@ -8,13 +8,13 @@
     {
       "name": "yuval-core",
       "source": "./plugins/yuval-core",
-      "description": "v0.9.0 — Yuval Core workspace plugin: ideation scaffolding (init, refresh-persona), code-workspace extension (init-code, write-brief, promote-to-code, report-back), SPIRIT contract (write-brief authors /code/SPIRIT.md on first brief; refresh-spirit re-walks the 8 atmosphere prompts; promote-to-code refuses on missing SPIRIT.md — D-028), Karpathy-style wiki discipline with proactive bookkeeping triggers and live session pages, session continuity, persona management (v2 — mode-switcher + visual-first), framework-canonical memory protocol shared by ideation and code wikis.",
-      "version": "0.9.0",
+      "description": "v0.10.0 — Yuval Core workspace plugin: ideation scaffolding (init, refresh-persona), code-workspace extension (init-code, write-brief, promote-to-code, report-back), SPIRIT contract (D-028), Wiki 2.0 workshop layer (D-029) — three-layer wiki (generative: vision / goals / spirit-signals / backlog / ideation; retrospective: log + pages; state: index + next + memory-protocol) with proactive generative + retrospective triggers and session-start read sequence extended to load project character, Karpathy-style wiki discipline with live session pages, session continuity, persona management (v2 — mode-switcher + visual-first), framework-canonical memory protocol shared by ideation and code wikis.",
+      "version": "0.10.0",
       "author": {
         "name": "Yuval Lavi"
       },
       "category": "productivity",
-      "keywords": ["init", "refresh-persona", "init-code", "write-brief", "refresh-spirit", "promote-to-code", "report-back", "spirit", "atmosphere", "workspace", "wiki", "karpathy", "persona", "session-continuity", "memory-protocol", "briefs", "adr"]
+      "keywords": ["init", "refresh-persona", "init-code", "write-brief", "refresh-spirit", "promote-to-code", "report-back", "spirit", "atmosphere", "workshop", "vision", "goals", "backlog", "ideation", "spirit-signals", "workspace", "wiki", "karpathy", "persona", "session-continuity", "memory-protocol", "briefs", "adr"]
     }
   ]
 }

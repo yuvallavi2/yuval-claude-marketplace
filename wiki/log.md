@@ -174,3 +174,25 @@ grep "^## \[.*adr" wiki/log.md
 - Brief: ../../output/briefs/CB-006-wiki-aware-skills.md
 - ADR: D-030 in DECISIONS.md
 - Status: ready for implementation
+
+## [2026-05-04] implement | CB-005 wiki workshop layer
+- Brief: ../../output/briefs/CB-005-wiki-workshop-layer.md (status: promoted; closure entry follows in this session's close-brief log entry)
+- ADR: D-029
+- Plugin version bumped: 0.9.0 → 0.10.0 (plugin.json + marketplace.json in lockstep per CB-002→CB-003 sync rule)
+- Plugin changes:
+  - New folder: plugins/yuval-core/skills/init/references/wiki-templates/ with vision.md, goals.md, spirit-signals.md, backlog.md, ideation-readme.md
+  - New file: plugins/yuval-core/skills/init/references/wiki-index-template.md (extracted from inline SKILL.md content; extended with three-layer headings)
+  - Modified: plugins/yuval-core/skills/init/references/memory-protocol.md — three-layer model (generative / retrospective / state), workshop stance, generative triggers, extended session-start read sequence (protocol → index → next → vision → goals → spirit-signals)
+  - Modified: plugins/yuval-core/skills/init/SKILL.md — Step 1 adds /wiki/ideation/, Step 3 reads new template files, Step 6 adds blocks for index from template + four generative files + ideation/, Step 7 confirmation extended; log + template-sync entry templates updated
+  - Modified: plugins/yuval-core/README.md — three-layer wiki section + framework-principles bullet
+- Code-wiki updates:
+  - Created: /code/wiki/pages/concept-wiki-workshop.md (workshop stance, three-layer model, rejected SoT alternative, per-file CB-006 query contract)
+  - Created: /code/wiki/pages/skill-init.md (current scope, what changed in v0.10.0, re-run on pre-D-029 project, validation recipe)
+  - Modified: /code/wiki/index.md — Modules + Patterns + Decisions sections updated for skill-init, concept-wiki-workshop, D-029, D-030
+- Workbench /wiki/ hand-migration (per brief scope item 5):
+  - Created: /wiki/goals.md, /wiki/spirit-signals.md (n/a body), /wiki/backlog.md, /wiki/ideation/README.md, /wiki/ideation/.gitkeep
+  - Overwritten: /wiki/memory-protocol.md (replaced with new three-layer version)
+  - Restructured: /wiki/index.md — added Generative layer + State layer + Retrospective layer headings; existing workbench-specific override categories (Sessions / Briefs / Sources / Skills / Commands / Concepts / Decisions / Open Questions) demoted to ### subheadings under Retrospective
+  - vision.md was already authored in the prior session and was left untouched
+- Validation: scratch-project simulation in /tmp/cb005-scratch confirmed init produces full three-layer structure with correct templates and {{PROJECT_NAME}} substitution. Workbench-side hand-migration verified non-destructive (existing pages, log entries, vision.md preserved). AC9 behavioral validation in fresh Claude session deferred to bundled pass (same gap as CB-001/2/3/4).
+- Pending: closure commit + annotated tag brief/CB-005 + release tag v0.10.0 (per AC10) — awaiting user "commit and push" instruction

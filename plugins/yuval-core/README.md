@@ -6,8 +6,44 @@ Core workspace plugin for Yuval's Claude setup. Two-mode workspace: ideation at 
 
 ### Ideation (always)
 
-- **`init` skill** — Scaffolds a new project with five folders (`input/`, `in-progress/`, `output/`, `output/briefs/`, `wiki/`), writes `CLAUDE.md` from the canonical template, injects persona, and initializes the wiki (Karpathy LLM Wiki pattern). The scaffolded wiki includes `memory-protocol.md` (the framework-canonical memory protocol), `index.md`, `log.md`, and `next.md` — the last file carries session-to-session continuity: every session ends by overwriting `next.md` with the current hand-off and printing it as the closing message, and every session starts by reading it.
+- **`init` skill** — Scaffolds a new project with the standard folders (`input/`, `in-progress/`, `output/`, `output/briefs/`, `wiki/`, `wiki/pages/`, `wiki/ideation/`), writes `CLAUDE.md` from the canonical template, injects persona, and initializes the **three-layer wiki** (see *The three-layer wiki* below). Every artifact is create-if-missing; re-runs are strictly additive.
 - **`refresh-persona` skill** — Re-syncs the persona block in an already-initialized project's `CLAUDE.md` from the skill's bundled `persona.md`, without re-running `init`. Replaces only the content between `<!-- PERSONA:START -->` and `<!-- PERSONA:END -->`; aborts with guidance if the markers aren't present.
+
+#### The three-layer wiki (v0.10.0+, D-029)
+
+The wiki is a **workshop**, not a single source of truth. Canonical artifacts (`SPIRIT.md`, briefs in `/output/briefs/`, ADRs in `/code/DECISIONS.md`, code) remain authoritative. The wiki is the surface where intent and atmosphere accumulate before they become commitments. Three layers, each with a distinct role and read cadence:
+
+**1. Generative — *what's coming*. Loaded into context every session.**
+
+| File | Role |
+|---|---|
+| `wiki/vision.md` | North star. Free prose. Confirmation gate before overwrite. |
+| `wiki/goals.md` | Current-phase goals, with target briefs. Active / Closed sections. |
+| `wiki/spirit-signals.md` | Raw atmospheric / voice / tone signals captured between `refresh-spirit` runs. **No synthesis at write time** — `refresh-spirit` synthesizes later. |
+| `wiki/backlog.md` | Parked tasks ("we should also someday…"). Becomes a brief only via explicit `write-brief`. |
+| `wiki/ideation/` | Half-formed ideas. One file per spitball: `idea-<slug>.md`. |
+
+**2. Retrospective — *what happened*. Read on demand.**
+
+`wiki/log.md` (append-only chronological record), `wiki/pages/` (one page per source / entity / concept / decision / session).
+
+**3. State — *current pointers*. Loaded into context every session.**
+
+`wiki/index.md` (catalog), `wiki/next.md` (single-file session hand-off), `wiki/memory-protocol.md` (the protocol itself).
+
+**Proactive generative triggers** (alongside the existing retrospective triggers):
+
+| Trigger | Action |
+|---|---|
+| User articulates vision / restates "why we're doing this" | Read `vision.md`; propose update; confirm before overwriting. |
+| User sets or shifts a phase goal | Append to `goals.md` under `## Active` (with set-date and target brief). |
+| User expresses an atmospheric / voice / tone preference | Append to `spirit-signals.md` as a dated raw note (status: pending synthesis). |
+| User says "we should also someday…" / "park this" | Append to `backlog.md` as a checkbox item. |
+| User spitballs an unfinished idea | Create a new file in `ideation/` named `idea-<slug>.md`. |
+
+**Read-side change.** Session-start sequence is now: `protocol → index → next → vision → goals → spirit-signals → scan input/`. The three generative reads load **project character** into context every session, not just retrospective state.
+
+The wiki ↔ skills contract is one-directional and human-confirmed: skills read the generative layer; skills may modify the wiki; **skills never auto-modify canonical artifacts**. Synthesis (`refresh-spirit`, brief drafting, promotion) is always user-confirmed.
 
 ### Code workspace (opt-in, v0.6.0+)
 
@@ -47,6 +83,7 @@ Core design commitments across this plugin. Read these before changing `init` or
 - **Handshake commands are the only sanctioned cross-mode edges.** `promote-to-code` (ideation → code) and `report-back` (code → ideation) are the only two paths that mutate state across the boundary. Everything else stays within its own mode. See D-024.
 - **Persona refresh is a deliberate act.** Init never touches content between `<!-- PERSONA:START -->` and `<!-- PERSONA:END -->`. Use `/yuval-core:refresh-persona` to pull updates into existing projects.
 - **Spirit lives at the project level, not per brief (D-028).** `/code/SPIRIT.md` is the project's single source of truth for atmosphere. `write-brief` authors it on the first brief in a project; `refresh-spirit` evolves it; briefs reference it with at most a one-paragraph override. `promote-to-code` refuses on missing SPIRIT.md. Application coding-agent persona is the application's lane, not yuval-core's.
+- **The wiki is a workshop, not a single source of truth (D-029).** Three layers — generative (vision / goals / spirit-signals / backlog / ideation), retrospective (log + pages), state (index / next / memory-protocol). Skills consume the generative layer; canonical artifacts (SPIRIT.md, briefs, ADRs, code) remain authoritative and are never auto-mutated. Synthesis is always user-confirmed.
 
 ## How it reads the marketplace
 

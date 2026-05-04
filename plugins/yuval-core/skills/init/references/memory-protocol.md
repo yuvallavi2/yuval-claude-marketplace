@@ -6,7 +6,11 @@ _This file defines how the wiki works: what lives where, when to write to it, an
 
 ## Wiki Discipline
 
-This project uses a persistent wiki (the Karpathy LLM Wiki pattern) as long-term memory. The wiki is the compiled, cross-referenced knowledge layer between raw sources and answers.
+This project uses a persistent wiki (the Karpathy LLM Wiki pattern, extended into a **workshop**) as long-term memory. The wiki is the compiled, cross-referenced knowledge layer between raw sources and answers — and the surface where intent and atmosphere accumulate before they get committed into canonical artifacts.
+
+### Workshop stance (D-029)
+
+Canonical artifacts (`SPIRIT.md`, briefs in `/output/briefs/`, ADRs in `/code/DECISIONS.md`, code) remain authoritative. The wiki is **not** a single source of truth — it is the **workshop** where signals collect before they become commitments. Skills like `write-brief`, `refresh-spirit`, and `promote-to-code` consume the wiki as input; they do not round-trip every artifact through it.
 
 ### Ownership
 
@@ -14,12 +18,33 @@ This project uses a persistent wiki (the Karpathy LLM Wiki pattern) as long-term
 - **The user owns `/input/`, `/in-progress/`, and `/output/`.** Never expect the user to hand-edit wiki pages.
 - The user reads the wiki. You write it.
 
-### Structure
+### Three layers
 
-- `/wiki/index.md` — content catalog, organized by category (Sources, Entities, Concepts, Decisions, Open Questions). Read this first when answering any question.
-- `/wiki/log.md` — append-only chronological record of ingests, queries, lint passes, and sessions. Every entry starts with `## [YYYY-MM-DD] operation | title` so it's grep-able.
+The wiki has three layers, each with a distinct role and read cadence.
+
+#### 1. Generative (intent, atmosphere, what's coming)
+
+Loaded into context every session. These files are **where the next phase of the project accumulates**.
+
+- `/wiki/vision.md` — north star. Free prose. Updated only with confirmation when framing has materially shifted.
+- `/wiki/goals.md` — current-phase goals. `## Active` and `## Closed / superseded` sections. Items follow the format defined inside the file.
+- `/wiki/spirit-signals.md` — raw atmospheric / voice / tone / texture signals captured between `refresh-spirit` runs. Append-only at write time. `refresh-spirit` synthesizes pending signals into `/code/SPIRIT.md` later.
+- `/wiki/backlog.md` — parked tasks ("we should also someday…"). `## Active` and `## Closed` sections. Becomes a brief only via explicit `/yuval-core:write-brief` invocation.
+- `/wiki/ideation/` — folder of half-formed ideas. One file per spitball: `idea-<slug>.md`.
+
+#### 2. Retrospective (what happened)
+
+Read on demand, not eagerly. The durable record.
+
+- `/wiki/log.md` — append-only chronological record of ingests, queries, lint passes, sessions, brief lifecycle events. Every entry starts with `## [YYYY-MM-DD] operation | title` so it's grep-able.
+- `/wiki/pages/` — individual wiki pages. One entity, concept, decision, source, session, skill, or command per page. Cross-linked with markdown links.
+
+#### 3. State (current pointers)
+
+Loaded into context every session. The "where am I" files.
+
+- `/wiki/index.md` — content catalog. Read first when answering any question.
 - `/wiki/next.md` — single-file session hand-off. Overwritten at the end of each working session, read at the start of the next. Holds the current next action, any open threads, and the one-line context needed to pick up cold.
-- `/wiki/pages/` — individual wiki pages. One entity, concept, or decision per page. Cross-linked with markdown links.
 - `/wiki/memory-protocol.md` — this file. The protocol itself.
 
 ### Operations (ambient vocabulary)
@@ -40,6 +65,8 @@ Finished deliverables live in `/output/`. If a deliverable contains durable insi
 
 The protocol is most effective when wiki bookkeeping happens *while* work is in flight, not at session end. Watch for these signals and act on them at the moment they occur — without waiting for the user to prompt.
 
+### Retrospective triggers
+
 | Trigger | Action |
 |---|---|
 | Artifact created or moved in `/output/` (incl. `/output/briefs/`) | Append `log.md` entry · touch the live session page |
@@ -47,6 +74,16 @@ The protocol is most effective when wiki bookkeeping happens *while* work is in 
 | Brief authored / promoted / closed | `log.md` entry per the brief lifecycle (one entry per state transition) |
 | Mode pivot ("moving to implementation", "let's wrap", "switching tools") | Flush wiki updates *before* pivoting |
 | 5+ substantive turns since last wiki touch | Self-check; if anything durable accumulated, flush |
+
+### Generative triggers (D-029)
+
+| Trigger | Action |
+|---|---|
+| User articulates vision / restates "why we're doing this" | Read `vision.md`; if the framing has materially shifted, propose an update and **confirm before overwriting**. Vision is the only generative file with a confirmation gate. |
+| User sets or shifts a phase goal | Append to `goals.md` under `## Active` (with set-date and target brief if known). Mark superseded goals as `~~struck~~ — superseded YYYY-MM-DD`. |
+| User expresses an atmospheric / voice / tone preference mid-session | Append to `spirit-signals.md` as a dated raw note with status `_Status: pending synthesis._`. **Do not synthesize at write time** — `refresh-spirit` synthesizes later. |
+| User says "we should also someday…" / "park this" / "remind me to" | Append to `backlog.md` as a checkbox item under `## Active`. |
+| User spitballs an unfinished idea | Create a new file in `ideation/` named `idea-<slug>.md`. Free-form body — no schema. |
 
 ### Live session page
 
@@ -60,8 +97,8 @@ A dated session page in `/wiki/pages/` (e.g., `session-YYYY-MM-DD-topic.md`) is 
 
 Wiki bookkeeping should be auditable without becoming chatter:
 
-- **Silent** for minor wiki touches: single log line, status field updates, routine appends.
-- **One-line acknowledgment** in chat at major milestones only: artifact created in `/output/`, brief authored / promoted / closed, mode pivot completed.
+- **Silent** for minor wiki touches: single log line, status field updates, routine appends, generative-trigger captures.
+- **One-line acknowledgment** in chat at major milestones only: artifact created in `/output/`, brief authored / promoted / closed, mode pivot completed, vision update proposed.
 - **No multi-paragraph reports** of bookkeeping. The wiki itself is the record; the chat is for working.
 
 ---
@@ -77,8 +114,13 @@ At the start of every session, before any task work:
 1. Read `/wiki/memory-protocol.md` (this file).
 2. Read `/wiki/index.md` to orient.
 3. Read `/wiki/next.md` to see where the last session left off.
-4. Scan `/input/` for new or updated files.
-5. If the user says "where did we leave off" (or similar), restate `/wiki/next.md` verbatim as the opening response and propose the next action from it.
+4. Read `/wiki/vision.md` to load the north star into context.
+5. Read `/wiki/goals.md` to load current-phase goals into context.
+6. Read `/wiki/spirit-signals.md` to load any pending atmosphere signals into context.
+7. Scan `/input/` for new or updated files.
+8. If the user says "where did we leave off" (or similar), restate `/wiki/next.md` verbatim as the opening response and propose the next action from it.
+
+The three generative reads (vision / goals / spirit-signals) load **project character** into context every session, not just retrospective state.
 
 ### Ending a session — the hand-off
 
@@ -126,7 +168,8 @@ _Last updated: YYYY-MM-DD_
 
 Before wrapping a session that produced meaningful work:
 
-- [ ] Wiki updated with any durable insight
+- [ ] Wiki updated with any durable insight (retrospective layer)
+- [ ] Generative-trigger captures applied (vision / goals / spirit-signals / backlog / ideation as appropriate)
 - [ ] Log entry appended to `/wiki/log.md`
 - [ ] `/wiki/next.md` overwritten with current hand-off
 - [ ] Hand-off printed as closing message
