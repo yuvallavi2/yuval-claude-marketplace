@@ -164,3 +164,13 @@ grep "^## \[.*adr" wiki/log.md
 - Includes brief: brief/CB-004
 - Tag: annotated, local — push pending user instruction
 - Description: ships /code/SPIRIT.md as project-level atmosphere SoT (D-028); /yuval-core:refresh-spirit skill (mirrors refresh-persona pattern); write-brief gains 8-prompt SPIRIT walk on first invocation in a project + 1-question adjustment on subsequent; brief template gains ## Spirit & Texture section; promote-to-code refuses on missing SPIRIT.md; README documents SPIRIT contract + recommended (not shipped) app-side pre-flight pattern
+
+## [2026-05-04] promote | CB-005 → D-029
+- Brief: ../../output/briefs/CB-005-wiki-workshop-layer.md
+- ADR: D-029 in DECISIONS.md
+- Status: ready for implementation
+
+## [2026-05-04] promote | CB-006 → D-030
+- Brief: ../../output/briefs/CB-006-wiki-aware-skills.md
+- ADR: D-030 in DECISIONS.md
+- Status: ready for implementation

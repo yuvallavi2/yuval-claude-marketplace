@@ -408,3 +408,27 @@ Final altitude: project-level SPIRIT.md as single source of truth, briefs refere
 - *Single shared `spirit-prompts.md` referenced by both `write-brief` and `refresh-spirit`.* Avoids duplication but breaks D-016's skill-independence rule. Rejected — drift is tolerated.
 - *`promote-to-code` warns on missing SPIRIT.md instead of refusing.* Soft enforcement. Rejected — the whole point of D-028 is that spirit must precede promotion; a warning is ignorable.
 - *(see brief's `## Out of scope` for further excluded scope.)*
+
+---
+
+## D-029 — Wiki 2.0: workshop layer (CB-005)
+
+**Decision:** Implement the scope captured in [`../output/briefs/CB-005-wiki-workshop-layer.md`](../output/briefs/CB-005-wiki-workshop-layer.md) — see brief for full to-do list, out-of-scope items, and acceptance criteria.
+
+**Reasoning:** Evolve the wiki from a retrospective archive (sessions, sources, decisions) into a **workshop** — a complete project memory that also captures the generative half: vision, current-phase goals, atmosphere signals between SPIRIT.md refreshes, backlog, and ideation. The wiki becomes the surface where intent and atmosphere accumulate; canonical artifacts (SPIRIT.md, briefs, ADRs) remain authoritative and consume the wiki as input. Origin: design conversation 2026-05-04, prompted by the observation that `refresh-spirit` and `write-brief` don't read the wiki, exposing that the wiki has no generative content for them to read.
+
+**Brief reference:** [`../output/briefs/CB-005-wiki-workshop-layer.md`](../output/briefs/CB-005-wiki-workshop-layer.md) — promoted 2026-05-04, status `promoted` post-promotion. The brief is immutable post-promotion and serves as the as-of-promotion snapshot of scope.
+
+**Rejected alternatives:** _(see brief's `## Out of scope` for what was explicitly excluded.)_
+
+---
+
+## D-030 — Wiki-aware skills (CB-006)
+
+**Decision:** Implement the scope captured in [`../output/briefs/CB-006-wiki-aware-skills.md`](../output/briefs/CB-006-wiki-aware-skills.md) — see brief for full to-do list, out-of-scope items, and acceptance criteria.
+
+**Reasoning:** Make `write-brief`, `refresh-spirit`, and `promote-to-code` consume the workshop layer that CB-005 introduces — so the wiki actually feeds the skills that produce canonical artifacts. Each skill gets a narrow, declared query contract: which wiki files it reads, what shape it expects, what it does when the wiki is sparse, and how it modifies the wiki on success. Conflict-resolution rule baked in across all three skills: **skills may modify wiki; skills never auto-modify canonical artifacts; synthesis is always user-confirmed.**
+
+**Brief reference:** [`../output/briefs/CB-006-wiki-aware-skills.md`](../output/briefs/CB-006-wiki-aware-skills.md) — promoted 2026-05-04, status `promoted` post-promotion. The brief is immutable post-promotion and serves as the as-of-promotion snapshot of scope.
+
+**Rejected alternatives:** _(see brief's `## Out of scope` for what was explicitly excluded.)_
