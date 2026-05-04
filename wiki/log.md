@@ -196,3 +196,27 @@ grep "^## \[.*adr" wiki/log.md
   - vision.md was already authored in the prior session and was left untouched
 - Validation: scratch-project simulation in /tmp/cb005-scratch confirmed init produces full three-layer structure with correct templates and {{PROJECT_NAME}} substitution. Workbench-side hand-migration verified non-destructive (existing pages, log entries, vision.md preserved). AC9 behavioral validation in fresh Claude session deferred to bundled pass (same gap as CB-001/2/3/4).
 - Pending: closure commit + annotated tag brief/CB-005 + release tag v0.10.0 (per AC10) — awaiting user "commit and push" instruction
+
+## [2026-05-04] implement | CB-006 wiki-aware skills
+- Brief: ../../output/briefs/CB-006-wiki-aware-skills.md (status: promoted; closure entry follows in this session's close-brief log entry)
+- ADR: D-030 (expanded from stub to full enumeration of (a)-(e) per AC4)
+- Plugin version bumped: 0.10.0 → 0.11.0 (plugin.json + marketplace.json in lockstep per the codified sync rule)
+- Plugin changes:
+  - Modified: plugins/yuval-core/skills/init/references/memory-protocol.md — new "Skill-wiki contract (D-030)" subsection under the three-layer model
+  - Modified: plugins/yuval-core/skills/write-brief/SKILL.md — declared-writes header comment; new Step 1.7 (read /wiki/goals.md, ask alignment); new Step 1.8 (read /wiki/backlog.md, LLM-judged matching, ask closure intent, stash backlog-closes marker); modified Step 3.5 (References) to accept ideation pointers + stash ideation-promotes marker; updated Step 4 to include marker comments after the status line
+  - Modified: plugins/yuval-core/skills/refresh-spirit/SKILL.md — declared-writes header comment; new Step 3.5 (read /wiki/spirit-signals.md pending entries, fold into pre-fills); new Step 7.5 (mark synthesized, append-only); Step 6 byte-identical case updated to still run Step 7.5; Step 8 confirmation extended
+  - Modified: plugins/yuval-core/commands/promote-to-code.md — declared-writes header comment; new Step 5.5 (parse backlog-closes marker, strike + move items in /wiki/backlog.md); new Step 5.6 (parse ideation-promotes marker, mv files into /wiki/ideation/archive/ with footer); Step 6 confirmation extended
+  - Modified: plugins/yuval-core/README.md — new "The skill-wiki contract" section + per-skill table + brief-marker convention; new framework-principles bullet for D-030
+- DECISIONS.md: D-030 expanded from stub to full enumeration of (a) skill-wiki contract three rules, (b) wiki-aware skills MVP, (c) refresh-persona stays wiki-blind, (d) backlog match LLM-judged not fuzzy-string, (e) brief markers carry promotion intent. Reasoning + Related + Rejected alternatives sections populated.
+- Code-wiki updates:
+  - Created: /code/wiki/pages/skill-write-brief.md (current scope, what changed in v0.11.0, sparse-wiki fallback, declared contract)
+  - Appended: /code/wiki/pages/skill-refresh-spirit.md — "CB-006 evolution" section documenting the spirit-signals integration
+  - Created: /code/wiki/pages/command-promote-to-code.md (refusal table, current steps, what changed in v0.11.0, why markers not promotion-time matching, declared contract)
+  - Created: /code/wiki/pages/concept-skill-wiki-contract.md (the three rules, wiki-aware-vs-blind, marker convention, capture-vs-act pattern, rejected variants)
+  - Modified: /code/wiki/index.md — Modules entries updated (refresh-spirit v0.11.0 note + new skill-write-brief + new command-promote-to-code); Patterns gains concept-skill-wiki-contract
+- Workbench /wiki/ updates:
+  - Modified: /wiki/index.md — CB-006 Briefs entry flipped to closed
+  - Modified: /wiki/goals.md — CB-005 + CB-006 goals moved from Active to Closed/superseded; behavioral-validation pass remains the only Active item
+- Brief CB-006: status open → closed; closing status-log entry appended pointing at this commit's tag
+- Validation: AC1–AC8 met structurally (file changes); AC9 (workbench validation: signal → synthesis, backlog → close, ideation → archive) deferred to bundled fresh-Claude pass — same gap as CB-001/2/3/4/5; AC10 (scratch-project sparse-wiki path validation) deferred to same pass.
+- Pending: closure commit + annotated tag brief/CB-006 + release tag v0.11.0 (per AC11) — awaiting user "commit and push" instruction

@@ -9,6 +9,14 @@ Handshake command: ideation → code. Promotes a single brief in `/output/briefs
 
 **Argument:** `$ARGUMENTS` should be a brief identifier in the form `CB-NNN` (e.g., `CB-007`). If empty, error and instruct the user to pass one.
 
+<!--
+Skill-wiki contract (D-030):
+- Declared READS:  /output/briefs/CB-XXX-*.md (the brief), /code/DECISIONS.md, /code/SPIRIT.md (gate check), /wiki/backlog.md (only if brief carries <!-- backlog-closes: ... --> marker), /wiki/ideation/*.md (only if brief carries <!-- ideation-promotes: ... --> marker)
+- Declared WRITES: /code/DECISIONS.md (append ADR), /output/briefs/CB-XXX-*.md (status field + status log only), /code/wiki/log.md (append promote entry), /wiki/log.md (append promote entry), /wiki/backlog.md (close marked items: strike + move to ## Closed), /wiki/ideation/archive/*.md (move marked ideation files in)
+- Wiki side-effects (backlog close, ideation archive) only fire when the brief explicitly carries the corresponding HTML-comment marker, which the user authored at write-brief time. Marker absent → side-effect skipped silently.
+-->
+
+
 ---
 
 ## Refusal cases — check before any mutation
@@ -97,6 +105,47 @@ Where `{{CB_ID}}` is `CB-NNN` and `{{BRIEF_RELPATH}}` is the path from `/code/wi
 - Implementation: pending
 ```
 
+### 5.5. Close marked backlog items (D-030)
+
+Parse the brief for a `<!-- backlog-closes: <slug1>,<slug2>,... -->` HTML comment near the top (immediately after the status line per the `write-brief` contract).
+
+- **Marker absent or comment-list empty:** silently skip — no wiki side-effect. Continue to Step 5.6.
+- **Marker present, `/wiki/backlog.md` missing:** silently skip and surface a one-line note in the Step 6 confirmation (*"Note: brief marks backlog items for closure but `/wiki/backlog.md` does not exist."*). The brief is still successfully promoted.
+- **Marker present, `/wiki/backlog.md` present:** for each comma-separated slug, find the matching `- [ ] **<slug>** — <context>` line under `## Active`. Replace the line in place with:
+
+  ```markdown
+  - ~~**<slug>**~~ — <context> — closed by [{{CB_ID}}]({{BRIEF_RELPATH_FROM_BACKLOG}}) on {{DATE}}
+  ```
+
+  Then move the rewritten line out of `## Active` and append it under `## Closed`. Order under `## Closed` is reverse-chronological (most recent first), so prepend to the `## Closed` section's existing entries.
+
+  `{{BRIEF_RELPATH_FROM_BACKLOG}}` is the path from `/wiki/backlog.md` to the brief — typically `../output/briefs/CB-NNN-<slug>.md`.
+
+  **No fuzzy matching.** If a slug from the marker isn't found in `## Active`, log a one-line note in Step 6 (*"Backlog slug `<slug>` not found in /wiki/backlog.md ## Active section — skipped."*) and continue. Do not crash; do not search `## Closed` (re-closing a closed item is a no-op).
+
+  **No deletions.** Closed items stay in the backlog file as the audit trail of what was committed and when.
+
+### 5.6. Archive consumed ideation files (D-030)
+
+Parse the brief for a `<!-- ideation-promotes: <slug-a>,<slug-b>,... -->` HTML comment near the top.
+
+- **Marker absent:** silently skip.
+- **Marker present, `/wiki/ideation/archive/` missing:** create it (`mkdir -p /wiki/ideation/archive/`).
+- **For each slug:** look for `/wiki/ideation/idea-<slug>.md`. If present, move it to `/wiki/ideation/archive/idea-<slug>.md` (use `git mv` if the project tracks the wiki in git, otherwise plain `mv`; the workbench's ideation `/wiki/` is unversioned per D-004 — use plain `mv`). Append a footer to the moved file:
+
+  ```markdown
+
+  ---
+
+  _Promoted to [{{CB_ID}}](../../../output/briefs/CB-NNN-<slug>.md) on {{DATE}}._
+  ```
+
+  (Adjust the `../../../` depth so the link resolves from `/wiki/ideation/archive/` back to `/output/briefs/`.)
+
+  **Slug not found in `/wiki/ideation/`:** log a one-line note in Step 6 (*"Ideation slug `<slug>` not found in /wiki/ideation/ — skipped."*). Do not crash.
+
+  **Idempotent on re-promotion attempts:** since the brief lifecycle prevents re-promotion (Refusal case 5), this step never runs twice on the same brief, so we don't need archive-already-exists handling.
+
 ### 6. Confirm
 
 Respond with the list of files touched:
@@ -106,8 +155,12 @@ Promoted: CB-NNN — [Brief Title]
 ADR added: D-{{DXXX}} in /code/DECISIONS.md
 Brief frozen: /output/briefs/CB-NNN-<slug>.md (status → promoted)
 Logs updated: /wiki/log.md, /code/wiki/log.md
+Backlog closures: <count> closed in /wiki/backlog.md  (omit line if zero)
+Ideation archived:  <count> moved to /wiki/ideation/archive/  (omit line if zero)
 Next: implement the brief's scope. Close with an annotated `brief/CB-NNN` tag at the scope-completion commit.
 ```
+
+(Surface any per-slug "not found" notes from Steps 5.5/5.6 below the main confirmation, one line each.)
 
 ---
 

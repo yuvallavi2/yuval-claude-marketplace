@@ -47,6 +47,16 @@ Loaded into context every session. The "where am I" files.
 - `/wiki/next.md` — single-file session hand-off. Overwritten at the end of each working session, read at the start of the next. Holds the current next action, any open threads, and the one-line context needed to pick up cold.
 - `/wiki/memory-protocol.md` — this file. The protocol itself.
 
+### Skill-wiki contract (D-030)
+
+The wiki and the skills that consume it follow three rules. These are the contract; any deviation is a bug.
+
+1. **Read freely.** Skills may read any wiki file as context or pre-fill. No special permission, no quotas. The generative layer in particular is *meant* to be loaded into skill context.
+2. **Write narrowly.** Skills may only write to the wiki files they explicitly declare in their `SKILL.md` (or command file). The declared write set is part of the contract — extending it requires a brief.
+3. **Never auto-modify canonical artifacts from wiki content alone.** Wiki content is *input* to a synthesis; the synthesis itself is user-confirmed. Canonical artifacts: `/code/SPIRIT.md`, briefs in `/output/briefs/`, ADRs in `/code/DECISIONS.md`, code files, persona.
+
+Concrete consequence: `refresh-spirit` reads `/wiki/spirit-signals.md` as pre-fill input, but the SPIRIT.md overwrite is gated on the user's diff review. `write-brief` reads `/wiki/backlog.md` to surface candidate closures, but the closure happens at promotion via an explicit user-confirmed marker. `promote-to-code` writes to `/wiki/backlog.md` (closing items) and `/wiki/ideation/archive/` (archiving consumed ideation files), but only when the brief carries the corresponding `<!-- backlog-closes: ... -->` or `<!-- ideation-promotes: ... -->` marker that the user authored at brief-write time.
+
 ### Operations (ambient vocabulary)
 
 These operations exist as a vocabulary the user can invoke:

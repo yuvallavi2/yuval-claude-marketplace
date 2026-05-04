@@ -16,8 +16,10 @@ _None yet — see `plugins/yuval-core/README.md` for the public-facing descripti
 ## Modules
 _(One page per skill or command, tracking implementation history and gotchas. Distinct from the `Skills`/`Commands` categories in the ideation wiki, which track design evolution.)_
 
-- [skill-refresh-spirit](pages/skill-refresh-spirit.md) — re-walk 8 spirit prompts and overwrite `/code/SPIRIT.md` (CB-004 / D-028, v0.9.0).
+- [skill-refresh-spirit](pages/skill-refresh-spirit.md) — re-walk 8 spirit prompts and overwrite `/code/SPIRIT.md` (CB-004 / D-028, v0.9.0); v0.11.0 adds spirit-signals integration (CB-006 / D-030).
 - [skill-init](pages/skill-init.md) — scaffold a new ideation project; v0.10.0 adds three-layer wiki scaffolding (CB-005 / D-029).
+- [skill-write-brief](pages/skill-write-brief.md) — author a code brief; v0.11.0 reads goals + backlog + ideation, stashes promotion-time markers (CB-006 / D-030).
+- [command-promote-to-code](pages/command-promote-to-code.md) — handshake command (ideation → code); v0.11.0 closes marked backlog items + archives consumed ideation (CB-006 / D-030).
 
 ---
 
@@ -26,6 +28,7 @@ _(Recurring conventions across skills: additive-merge discipline, deprecated-sec
 
 - [concept-spirit-contract](pages/concept-spirit-contract.md) — project-vs-brief altitude rule for atmosphere; `n/a-is-valid`; the SPIRIT.md SoT pattern (CB-004 / D-028).
 - [concept-wiki-workshop](pages/concept-wiki-workshop.md) — workshop stance over single-source-of-truth; three-layer wiki (generative / retrospective / state); proactive triggers; CB-006 query contracts (CB-005 / D-029).
+- [concept-skill-wiki-contract](pages/concept-skill-wiki-contract.md) — three rules: read freely / write narrowly / never auto-modify canonical artifacts; brief-marker convention; capture-vs-act pattern (CB-006 / D-030).
 
 ---
 

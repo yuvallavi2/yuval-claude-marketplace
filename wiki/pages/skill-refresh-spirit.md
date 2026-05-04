@@ -67,6 +67,25 @@ Out of scope per the brief:
 7. Overwrite SPIRIT.md whole-file.
 8. Confirm with file path + counts.
 
+## CB-006 evolution (v0.11.0+, D-030) — spirit-signals integration
+
+The skill became **wiki-aware** in v0.11.0. Two new steps insert into the existing flow without changing the existing contract:
+
+**Step 3.5 — Read pending spirit-signals.** Between current-content read (Step 3) and the prompt walk (Step 4), the skill reads `/wiki/spirit-signals.md` if present and parses any `## YYYY-MM-DD — <title>` sections whose footer is `_Status: pending synthesis._`. Already-synthesized signals are skipped (history, not input). Pending signals are surfaced to the user before the walk and **fold into the pre-fill** for each of the 8 prompts. Claude judges which signals are relevant to which prompt — no fixed mapping.
+
+**Step 7.5 — Mark signals synthesized.** After the SPIRIT.md write succeeds, each previously-pending signal's footer is updated from `_Status: pending synthesis._` to `_Status: synthesized into SPIRIT.md on YYYY-MM-DD via /yuval-core:refresh-spirit._`. **Append-only on the signals file** — never delete a signal, never edit body text. Only the footer line is mutated. The full signal history + when each was folded in is the audit trail.
+
+**Sparse-wiki fallback:** missing `/wiki/spirit-signals.md` or no pending entries → existing flow runs unchanged. Wiki read is additive, not gating. Same shape as `write-brief`'s sparse-wiki fallback (D-030).
+
+**Byte-identical SPIRIT.md case:** if Step 6's diff shows no changes (user kept all answers), Step 7.5 still runs to mark pending signals synthesized — keeping all answers is itself a confirmation that the existing synthesis covers the new signals. Step 7 (the SPIRIT.md write) is skipped, but Step 7.5 (the signals update) runs.
+
+**Skill-wiki contract** (declared in the SKILL.md header comment):
+- **Reads:** `/code/SPIRIT.md`, `/wiki/spirit-signals.md`
+- **Writes:** `/code/SPIRIT.md` (canonical, whole-file, user-confirmed via diff), `/wiki/spirit-signals.md` (status-line append only)
+- **Sparse-wiki fallback:** missing file or no pending entries → existing flow unchanged.
+
+This is the consumption side of the workshop layer that CB-005 introduced (`spirit-signals.md` as the raw-signal capture surface). The pattern: **capture raw signals between syntheses (no work at capture time), synthesize on demand (user-confirmed)**. Mirrors the write-brief / promote-to-code pattern where intent is captured at one step and acted on at another, with an explicit hand-off contract between them.
+
 ## Cross-references
 
 - **ADR:** [D-028](../../code/DECISIONS.md#d-028) — Project SPIRIT contract.

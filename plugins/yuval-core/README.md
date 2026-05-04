@@ -45,6 +45,41 @@ The wiki is a **workshop**, not a single source of truth. Canonical artifacts (`
 
 The wiki ↔ skills contract is one-directional and human-confirmed: skills read the generative layer; skills may modify the wiki; **skills never auto-modify canonical artifacts**. Synthesis (`refresh-spirit`, brief drafting, promotion) is always user-confirmed.
 
+#### The skill-wiki contract (v0.11.0+, D-030)
+
+Three rules govern how skills interact with the wiki. They are the contract; any deviation is a bug.
+
+1. **Read freely.** Skills may read any wiki file as context or pre-fill. No special permission, no quotas.
+2. **Write narrowly.** Skills may only write to the wiki files they explicitly declare in their `SKILL.md` (or command file). The declared write set is part of the contract — extending it requires a brief.
+3. **Never auto-modify canonical artifacts from wiki content alone.** Wiki content is *input* to a synthesis; the synthesis itself is user-confirmed. Canonical artifacts: `/code/SPIRIT.md`, briefs in `/output/briefs/`, ADRs in `/code/DECISIONS.md`, code files, persona.
+
+Wiki-aware skills (the MVP):
+
+| Skill | Reads | Writes (wiki) | Sparse-wiki fallback |
+|---|---|---|---|
+| `write-brief` | `/wiki/goals.md` (Step 1.7), `/wiki/backlog.md` (Step 1.8), `/wiki/ideation/*.md` (when user points at one in References) | none directly — stashes `<!-- backlog-closes: ... -->` and `<!-- ideation-promotes: ... -->` markers in the brief for `promote-to-code` to consume | each read is best-effort; missing/malformed file → skip step silently |
+| `refresh-spirit` | `/wiki/spirit-signals.md` (Step 3.5, pending entries only) | `/wiki/spirit-signals.md` (Step 7.5 — status-line append only; never content edits, never deletions) | missing file or no pending entries → existing flow runs unchanged |
+| `promote-to-code` | brief markers; `/wiki/backlog.md` (only if `backlog-closes` marker); `/wiki/ideation/*.md` (only if `ideation-promotes` marker) | `/wiki/backlog.md` (Step 5.5 — close marked items: strike + move to `## Closed`), `/wiki/ideation/archive/*.md` (Step 5.6 — move marked ideation files in) | marker absent → side-effect skipped silently; brief still successfully promoted |
+
+Skills deliberately staying wiki-blind: `init`, `init-code`, `refresh-persona`. Init skills create the wiki (no point reading what they're scaffolding); `refresh-persona` operates on a project-agnostic artifact (persona) and would conflate altitudes if it read the project-specific wiki.
+
+#### Brief-marker convention (v0.11.0+, D-030)
+
+`write-brief` stashes user-confirmed wiki side-effects as HTML-comment markers in the brief, immediately after the status line:
+
+```markdown
+# CB-XXX — Title
+
+_Created: YYYY-MM-DD | Status: open | ADR: TBD_
+<!-- backlog-closes: <slug1>,<slug2> -->
+<!-- ideation-promotes: <slug-a>,<slug-b> -->
+
+## Goal
+...
+```
+
+`promote-to-code` parses these on promotion. Either marker is omitted if its corresponding list is empty. Briefs without markers cause no wiki side-effects at promotion — the existing promotion contract is unchanged. Markers are the explicit hand-off contract from author-time intent to promotion-time action.
+
 ### Code workspace (opt-in, v0.6.0+)
 
 - **`init-code` skill** — Scaffolds `/code/` as a git repo with its own `CLAUDE.md`, `README.md`, `DECISIONS.md`, `.gitignore`, and a self-contained code wiki. Detects an existing `/code/.git/` (e.g., a prior clone) and additively scaffolds without re-running `git init`.
@@ -84,6 +119,7 @@ Core design commitments across this plugin. Read these before changing `init` or
 - **Persona refresh is a deliberate act.** Init never touches content between `<!-- PERSONA:START -->` and `<!-- PERSONA:END -->`. Use `/yuval-core:refresh-persona` to pull updates into existing projects.
 - **Spirit lives at the project level, not per brief (D-028).** `/code/SPIRIT.md` is the project's single source of truth for atmosphere. `write-brief` authors it on the first brief in a project; `refresh-spirit` evolves it; briefs reference it with at most a one-paragraph override. `promote-to-code` refuses on missing SPIRIT.md. Application coding-agent persona is the application's lane, not yuval-core's.
 - **The wiki is a workshop, not a single source of truth (D-029).** Three layers — generative (vision / goals / spirit-signals / backlog / ideation), retrospective (log + pages), state (index / next / memory-protocol). Skills consume the generative layer; canonical artifacts (SPIRIT.md, briefs, ADRs, code) remain authoritative and are never auto-mutated. Synthesis is always user-confirmed.
+- **Skill-wiki contract is read freely / write narrowly / never auto-modify canonical artifacts (D-030).** Each wiki-aware skill declares its read and write surfaces in a comment block at the top of its `SKILL.md`. The MVP wiki-aware skills are `write-brief`, `refresh-spirit`, and `promote-to-code`; `refresh-persona` and the init skills deliberately stay wiki-blind. Brief markers (`<!-- backlog-closes: ... -->`, `<!-- ideation-promotes: ... -->`) carry user-confirmed promotion intent across the author → promotion handoff.
 
 ## How it reads the marketplace
 

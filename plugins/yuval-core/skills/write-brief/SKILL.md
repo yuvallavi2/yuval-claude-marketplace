@@ -14,6 +14,14 @@ When triggered, walk the user through authoring a code brief. The result is a si
 
 A brief is the **contract artifact** between ideation and code. It is the only artifact that becomes promotion-eligible. Specs, design docs, and reports stay in `/output/` as reference material — briefs link to them but are not the same thing.
 
+<!--
+Skill-wiki contract (D-030):
+- Declared READS:  /code/SPIRIT.md, /wiki/goals.md, /wiki/backlog.md, /wiki/ideation/*.md (when the user points at one in References)
+- Declared WRITES: /output/briefs/CB-XXX-<slug>.md (the brief itself, including <!-- backlog-closes: ... --> and <!-- ideation-promotes: ... --> markers stashed for promote-to-code to consume)
+- This skill never writes to /wiki/* directly. Wiki side-effects from a brief happen at promotion, via the markers below.
+- Sparse-wiki fallback: every wiki read is best-effort. Missing or malformed file → skip the corresponding step silently and continue.
+-->
+
 ---
 
 ## Step 1 — Verify the workspace
@@ -82,6 +90,40 @@ Continue to Step 2.
 
 If `/code/` does not exist at all (the project hasn't been promoted to code yet), skip the gate — the brief is being authored before `init-code`. Note to the user: *"`/code/` does not exist yet, so SPIRIT.md authoring is deferred. After you run `/yuval-core:init-code`, the next `/yuval-core:write-brief` invocation will walk the spirit prompts before that brief is authored."* Then continue to Step 2 with the brief's `## Spirit & Texture` section omitted (the brief will be edited or re-authored once `/code/` exists).
 
+## Step 1.7 — Read goals (D-030)
+
+Read `/wiki/goals.md` if it exists.
+
+- **File missing or `## Active` section absent / empty:** silently skip — no surface to the user, no brief mutation. Continue to Step 1.8.
+- **File present with active goals:** parse the `## Active` section into a list of goal titles (one per `- [ ]` checkbox line). Surface them to the user in one turn:
+
+  > *"Current active goals:*
+  > *<numbered list of titles>*
+  >
+  > *Is this brief part of one of them, or a new direction?"*
+
+  Capture the user's answer (free text, often a number or short phrase). Stash the answer for Step 4 — the brief's References section will gain a `> Goal alignment: <answer>` blockquote line.
+
+Do **not** gate the brief on goal alignment. The point is surfacing the connection, not enforcing it. A brief that's a new direction is still a valid brief.
+
+## Step 1.8 — Read backlog (D-030)
+
+Read `/wiki/backlog.md` if it exists.
+
+- **File missing or `## Active` section absent / empty:** silently skip. Continue to Step 2.
+- **File present with active items:** parse the `## Active` section into a list (one per `- [ ]` checkbox line; the slug is the bolded `**<slug>**` token). After Step 3.1 (Title) has run — so you have a working title — use Claude judgment to identify which backlog items semantically match the brief's emerging title and scope. **No fuzzy-string matching, no tag matching — read the items and judge.**
+  - If zero matches, silently continue.
+  - If one or more matches, ask the user (one turn):
+
+    > *"This brief looks like it could close backlog items:*
+    > *<numbered list of matching items, with their slugs>*
+    >
+    > *Close any of them when this brief is promoted? (numbers, all, none)"*
+
+    Parse the user's answer into a list of slugs. Stash the slug list for Step 4 — the brief will gain a `<!-- backlog-closes: <slug1>,<slug2>,... -->` HTML comment that `promote-to-code` will consume.
+
+This step requires Step 3.1 to have run. Defer the actual ask until after the title is captured. (The backlog **read** can happen now, but the **ask** comes after Step 3.1.)
+
 ## Step 2 — Compute the next CB-XXX number
 
 List existing files in `/output/briefs/` matching the pattern `CB-NNN-*.md`. Take the highest `NNN` and increment by one. Pad to three digits (`CB-001`, `CB-014`, `CB-127`). If the folder is empty, start at `CB-001`.
@@ -124,12 +166,15 @@ This is the **most important** section of a brief — it prevents scope creep mi
 
 ### 3.5 References
 
-> "What docs, specs, or wiki pages does this brief depend on?"
+> "What docs, specs, or wiki pages does this brief depend on? You can also point at recent ideation files (`/wiki/ideation/idea-<slug>.md`) — if so, the file will be archived to `/wiki/ideation/archive/` at promotion."
 
 Capture as relative-path links from the brief's location (`/output/briefs/`):
 - Specs in `/output/`: `[`/output/foo.md`](../foo.md)`
 - Wiki pages: `[`/wiki/pages/foo.md`](../../wiki/pages/foo.md)`
 - Predecessor briefs: `[CB-XXX](CB-XXX-<slug>.md)` if a prior brief is being superseded or extended.
+- Ideation files: `[`/wiki/ideation/idea-<slug>.md`](../../wiki/ideation/idea-<slug>.md)` — also stash the slug so Step 4 can append a `<!-- ideation-promotes: <slug> -->` marker.
+
+If the user names one or more ideation files, also append a `> Goal alignment: <answer>` blockquote (from Step 1.7) and any goal-related context to the References section. Multiple ideation slugs become a comma-separated list in the marker: `<!-- ideation-promotes: <slug1>,<slug2> -->`.
 
 ### 3.6 Acceptance
 
@@ -155,6 +200,23 @@ Substitute the captured values into `references/brief-template.md`:
   - **No `/code/` yet (Step 1.5.c):** omit the section header and body — leave `{{SPIRIT_AND_TEXTURE}}` as an empty string and remove the `## Spirit & Texture` header from the rendered brief.
 
 Write to `/output/briefs/CB-XXX-<slug>.md`. Status field is `open`. ADR field is `TBD`.
+
+### Marker comments (D-030)
+
+If Step 1.8 captured backlog closures or Step 3.5 captured ideation pointers, insert HTML comment markers into the brief immediately after the status line. `promote-to-code` parses these on promotion.
+
+```markdown
+# CB-XXX — Title
+
+_Created: YYYY-MM-DD | Status: open | ADR: TBD_
+<!-- backlog-closes: <slug1>,<slug2> -->
+<!-- ideation-promotes: <slug-a>,<slug-b> -->
+
+## Goal
+...
+```
+
+Either marker is omitted if its corresponding list is empty. Both markers carry comma-separated slug lists (no spaces around commas). The user-confirmed slugs in Step 1.8 / Step 3.5 are the explicit hand-off contract for the wiki side-effects that `promote-to-code` will execute. Briefs without markers cause no wiki side-effects at promotion — the existing promotion contract is unchanged.
 
 ## Step 5 — Confirm
 
