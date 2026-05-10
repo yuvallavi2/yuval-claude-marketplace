@@ -80,6 +80,19 @@ _Created: YYYY-MM-DD | Status: open | ADR: TBD_
 
 `promote-to-code` parses these on promotion. Either marker is omitted if its corresponding list is empty. Briefs without markers cause no wiki side-effects at promotion — the existing promotion contract is unchanged. Markers are the explicit hand-off contract from author-time intent to promotion-time action.
 
+#### Bidirectional wiki reads (v0.12.0+, D-031)
+
+The two wikis (`/wiki/` and `/code/wiki/`) are read symmetrically. Cross-wiki **reads** are always sanctioned and need no handshake — only **writes** do (`promote-to-code` / `report-back`, per D-024). The `## Cross-wiki reads` section in `memory-protocol.md` codifies the protocol; the `## Sister wiki` pointer at the top of each `index.md` makes the sister wiki visible at a glance.
+
+| Aspect | Rule |
+|---|---|
+| Cadence | **Eager** on both `index.md` files (loaded every session). **Lazy** on everything else — `next.md`, `log.md`, `pages/`, plus the generative-layer files in ideation. |
+| Triggers | Symmetric trigger table — same signals on both sides ("what's next?", "what shipped?", "what's the vision?") map to the same protocol behavior. Direction-agnostic phrasing with `(if present)` qualifiers handles the structural asymmetry (ideation has the workshop layer; code does not). |
+| Synthesis | When both wikis have relevant content, return **one** synthesized answer citing both — never segregated by source. The user thinks of one project, not two halves. |
+| Sole-mount fallback | If the sister wiki path doesn't resolve (Cowork standalone-mount of `/code/`, or an ideation-only project with no `/code/`), fall back silently to local-only. Same shape as D-030's sparse-wiki fallback — no warnings, no errors. |
+
+Reads being sanctioned (vs handshake-gated) keeps the asymmetry clean: writes mutate state and create audit trail; reads change nothing and would only accumulate ceremony if gated.
+
 ### Code workspace (opt-in, v0.6.0+)
 
 - **`init-code` skill** — Scaffolds `/code/` as a git repo with its own `CLAUDE.md`, `README.md`, `DECISIONS.md`, `.gitignore`, and a self-contained code wiki. Detects an existing `/code/.git/` (e.g., a prior clone) and additively scaffolds without re-running `git init`.
@@ -120,6 +133,7 @@ Core design commitments across this plugin. Read these before changing `init` or
 - **Spirit lives at the project level, not per brief (D-028).** `/code/SPIRIT.md` is the project's single source of truth for atmosphere. `write-brief` authors it on the first brief in a project; `refresh-spirit` evolves it; briefs reference it with at most a one-paragraph override. `promote-to-code` refuses on missing SPIRIT.md. Application coding-agent persona is the application's lane, not yuval-core's.
 - **The wiki is a workshop, not a single source of truth (D-029).** Three layers — generative (vision / goals / spirit-signals / backlog / ideation), retrospective (log + pages), state (index / next / memory-protocol). Skills consume the generative layer; canonical artifacts (SPIRIT.md, briefs, ADRs, code) remain authoritative and are never auto-mutated. Synthesis is always user-confirmed.
 - **Skill-wiki contract is read freely / write narrowly / never auto-modify canonical artifacts (D-030).** Each wiki-aware skill declares its read and write surfaces in a comment block at the top of its `SKILL.md`. The MVP wiki-aware skills are `write-brief`, `refresh-spirit`, and `promote-to-code`; `refresh-persona` and the init skills deliberately stay wiki-blind. Brief markers (`<!-- backlog-closes: ... -->`, `<!-- ideation-promotes: ... -->`) carry user-confirmed promotion intent across the author → promotion handoff.
+- **Cross-wiki reads are first-class and symmetric (D-031).** Reads across the ideation/code boundary are always sanctioned and need no handshake — only writes do (D-024). Eager on both `index.md` files; lazy on everything else. Symmetric trigger table lives byte-identical in both `memory-protocol.md` files. Sole-mount fallback (sister wiki path doesn't resolve) drops silently to local-only — same shape as D-030's sparse-wiki fallback.
 
 ## How it reads the marketplace
 

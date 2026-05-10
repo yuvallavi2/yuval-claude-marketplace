@@ -454,3 +454,30 @@ The wiki-aware MVP was sized to what CB-005's surfaces actually justify: three s
 - *Reading `vision.md` or `open-questions.md` in any skill.* Vision is too unstructured for skills to consume reliably; open-questions are the user's deliberation surface, not skill input.
 - *Promotion-time matching (re-asking the user at promotion which backlog items the brief closes).* Re-asks days after the brief was authored, when context has decayed. Markers fix the match at brief-write time when context is freshest.
 - *(see brief's `## Out of scope` for further excluded scope.)*
+
+---
+
+## D-031 — Bidirectional wiki reads
+
+**Decision:** Implement the scope captured in [`../output/briefs/CB-007-bidirectional-wiki-reads.md`](../output/briefs/CB-007-bidirectional-wiki-reads.md) — see brief for full to-do list, out-of-scope items, and acceptance criteria.
+
+**Reasoning:** The framework already had asymmetric protocol across the ideation/code boundary: writes went through sanctioned handshakes (D-024), reads had no protocol. Cross-mode questions ("what's next on the code side?", "what's the original vision?") got answered against whichever wiki the active mode happened to be in, silently dropping half the project's memory. CB-007 closes the gap by codifying reads as first-class symmetric protocol.
+
+Three design choices anchor the decision:
+
+**(a) Eager on indexes, lazy on pages.** Both `index.md` files are tiny catalogs and high-leverage — loading both at session start surfaces the sister wiki's existence and structure without paying the cost of the full wiki tree. Pages, logs, and the rest are read on demand. The eager set is two small files; everything else is justified by the active question.
+
+**(b) Symmetric triggers, single table.** The same trigger table lives byte-identical in both `memory-protocol.md` files. From either side, the same user signal ("what's next?") produces the same protocol behavior (consult local + sister `next.md`). The table uses direction-agnostic phrasing with `(if present)` qualifiers, so it works unchanged across the structural asymmetry between ideation's three-layer protocol (D-029) and the code-side protocol (which has no workshop layer — out of scope per CB-007).
+
+**(c) Reads are sanctioned, not handshake-gated.** Writes need handshakes because they mutate state and create audit trail (D-024). Reads change nothing — gating them behind a command would add ceremony without value. The protocol declares reads always-sanctioned; the trigger table tells Claude when to reach for them. The sole-mount fallback (mirrors D-030's sparse-wiki fallback) handles the Cowork standalone-mount case: if the sister wiki path doesn't resolve, fall back silently to local-only.
+
+**Brief reference:** [`../output/briefs/CB-007-bidirectional-wiki-reads.md`](../output/briefs/CB-007-bidirectional-wiki-reads.md) — promoted 2026-05-10, status `promoted` post-promotion. The brief is immutable post-promotion and serves as the as-of-promotion snapshot of scope.
+
+**Related:** [D-021](#d-021) (two wikis, shared protocol, each self-contained — bidirectional reads preserve self-containment by reading at runtime, not mirroring at write time), [D-024](#d-024) (handshakes-as-only-write-edges — CB-007 confirms reads are deliberately *not* handshake-gated, completing the asymmetry between writes and reads), [D-029](#d-029) (workshop layer — generative-layer files in ideation are the most common cross-read target from code-mode), [D-030](#d-030) (skill-wiki contract + sparse-wiki fallback — sole-mount fallback mirrors the same fail-silent shape).
+
+**Rejected alternatives:**
+- *New handshake command for reads* (e.g. `/yuval-core:peek`) — adds ceremony to a low-stakes operation. Reads change no state and have no audit value. Rejected.
+- *Auto-mirror the wikis at write time* — already rejected at D-021. Single source of truth across the boundary forces symlink-or-submodule fragility and breaks standalone mounts. Cross-reads at runtime preserve self-containment.
+- *Eager-load full sister wiki* (or indexes plus `next.md` plus `log.md`) — too much context cost paid every session for content most sessions don't need. Indexes only is the right level — they're the catalog that tells Claude what else to fetch.
+- *Asymmetric trigger tables, one per direction* — doubles the surface to maintain. The symmetric table works because the questions are symmetric: "what's next?" / "what shipped?" / "what's the vision?" arise on both sides.
+- *Cross-wiki lint command* — verify sister pointers resolve, flag orphan refs, detect stale cross-references. Out of scope per brief; possible follow-up. For now, protocol-as-prose is enough.

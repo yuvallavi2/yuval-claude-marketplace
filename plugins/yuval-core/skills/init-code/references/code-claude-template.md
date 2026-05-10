@@ -75,6 +75,8 @@ The only sanctioned mutations across the ideation/code boundary:
 
 Routine commits, code edits, and code-wiki updates **stay within code mode** — they do not need a handshake command. Use the handshake commands only when crossing the boundary.
 
+**Reads** across the boundary are a different category. Consulting `../wiki/next.md`, `../wiki/vision.md`, or any sister-wiki page is always sanctioned and needs no handshake — only **mutations** need one. The cross-wiki read protocol (cadence, trigger table, sole-mount fallback) lives in [`wiki/memory-protocol.md#cross-wiki-reads`](wiki/memory-protocol.md#cross-wiki-reads).
+
 ---
 
 ## Standalone-mount note

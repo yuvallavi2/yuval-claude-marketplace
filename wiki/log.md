@@ -220,3 +220,34 @@ grep "^## \[.*adr" wiki/log.md
 - Brief CB-006: status open → closed; closing status-log entry appended pointing at this commit's tag
 - Validation: AC1–AC8 met structurally (file changes); AC9 (workbench validation: signal → synthesis, backlog → close, ideation → archive) deferred to bundled fresh-Claude pass — same gap as CB-001/2/3/4/5; AC10 (scratch-project sparse-wiki path validation) deferred to same pass.
 - Pending: closure commit + annotated tag brief/CB-006 + release tag v0.11.0 (per AC11) — awaiting user "commit and push" instruction
+
+## [2026-05-10] promote | CB-007 → D-031
+- Brief: ../../output/briefs/CB-007-bidirectional-wiki-reads.md
+- ADR: D-031 in DECISIONS.md
+- Status: ready for implementation
+
+
+## [2026-05-10] implement | CB-007 — bidirectional wiki reads
+- Brief: ../../output/briefs/CB-007-bidirectional-wiki-reads.md (ADR D-031)
+- Plugin version bumped: 0.11.0 → 0.12.0 (plugin.json + marketplace.json in lockstep)
+- Plugin / template changes (canonical sources):
+  - Modified: plugins/yuval-core/skills/init/references/memory-protocol.md — new `## Cross-wiki reads` section (cadence, symmetric trigger table, synthesis rule, sole-mount fallback) inserted between Wiki Discipline and Proactive triggers
+  - Modified: plugins/yuval-core/skills/init/references/wiki-index-template.md — new `> **Sister wiki ...**` blockquote at top
+  - Modified: plugins/yuval-core/skills/init/references/claude-template.md — new sentence under "Long-term memory protocol" pointing at the cross-wiki-reads anchor
+  - Modified: plugins/yuval-core/skills/init-code/references/code-claude-template.md — new "Reads are sanctioned" paragraph in "Handshake commands (cross-mode edges)"
+  - Modified: plugins/yuval-core/skills/init-code/SKILL.md — inline `index.md` template (Step 6) gains a `> **Sister wiki ...**` blockquote at top
+  - Modified: plugins/yuval-core/README.md — new "Bidirectional wiki reads (v0.12.0+, D-031)" section under workshop / skill-wiki contract; new framework-principles bullet for D-031
+- DECISIONS.md: D-031 expanded from stub to full Reasoning (a/b/c structure: eager-on-indexes, symmetric triggers, reads-not-handshake-gated) + Related + Rejected alternatives
+- Workbench backfill (mirrors of canonical templates):
+  - Modified: /wiki/memory-protocol.md — added `## Cross-wiki reads` section (byte-identical to canonical)
+  - Modified: /wiki/index.md — added Sister wiki blockquote at top
+  - Modified: /CLAUDE.md — added cross-wiki reads cross-ref under "Long-term memory protocol"
+  - Modified: /code/wiki/memory-protocol.md — added `## Cross-wiki reads` section (placed before Session Continuity since this file lacks Proactive triggers)
+  - Modified: /code/wiki/index.md — added Sister wiki blockquote at top + Modules updated (skill-init / skill-init-code v0.12.0 notes) + Decisions list updated (D-030 promoted from "pending implementation" → closed; D-031 added)
+  - Modified: /code/CLAUDE.md — added "Reads are sanctioned" paragraph
+- Code-wiki updates:
+  - Modified: /code/wiki/pages/skill-init.md — added "What changed in v0.12.0 (CB-007, D-031)" section
+  - Created: /code/wiki/pages/skill-init-code.md — purpose, current scope, v0.12.0 changes, discipline preserved, references
+- Brief CB-007: status flips open → promoted → closed once the commit lands; closing status-log entry pending the close commit
+- Validation: AC1 (scope items shipped) addressed by this implementation; AC2 (D-031 has rationale + trade-offs) addressed; AC3/AC4 (init / init-code on scratch project produce the new sections) deferred to bundled fresh-Claude pass; AC5/AC6 (behavioral checks) — protocol now in both memory-protocols, behavior should follow on the next session start; AC7 (workbench backfilled) addressed
+- Pending: scratch-project verification, closure commit + annotated tags brief/CB-007 + v0.12.0 — awaiting Forge orchestration

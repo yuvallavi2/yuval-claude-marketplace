@@ -4,6 +4,8 @@ The content catalog for this code workspace's wiki. Read this first when picking
 
 > **Current next action:** see [next.md](next.md) — the single-file session hand-off, refreshed each session.
 
+> **Sister wiki:** [`../../wiki/index.md`](../../wiki/index.md) — consult for ideation-mode state (vision, current-phase goals, atmosphere signals, backlog, ideation files). Protocol: [memory-protocol.md#cross-wiki-reads](memory-protocol.md#cross-wiki-reads).
+
 ---
 
 ## Architecture
@@ -17,7 +19,8 @@ _None yet — see `plugins/yuval-core/README.md` for the public-facing descripti
 _(One page per skill or command, tracking implementation history and gotchas. Distinct from the `Skills`/`Commands` categories in the ideation wiki, which track design evolution.)_
 
 - [skill-refresh-spirit](pages/skill-refresh-spirit.md) — re-walk 8 spirit prompts and overwrite `/code/SPIRIT.md` (CB-004 / D-028, v0.9.0); v0.11.0 adds spirit-signals integration (CB-006 / D-030).
-- [skill-init](pages/skill-init.md) — scaffold a new ideation project; v0.10.0 adds three-layer wiki scaffolding (CB-005 / D-029).
+- [skill-init](pages/skill-init.md) — scaffold a new ideation project; v0.10.0 adds three-layer wiki scaffolding (CB-005 / D-029); v0.12.0 emits cross-wiki reads protocol in templates (CB-007 / D-031).
+- [skill-init-code](pages/skill-init-code.md) — scaffold the code workspace under `/code/` (D-022); v0.12.0 emits cross-wiki reads protocol in templates (CB-007 / D-031).
 - [skill-write-brief](pages/skill-write-brief.md) — author a code brief; v0.11.0 reads goals + backlog + ideation, stashes promotion-time markers (CB-006 / D-030).
 - [command-promote-to-code](pages/command-promote-to-code.md) — handshake command (ideation → code); v0.11.0 closes marked backlog items + archives consumed ideation (CB-006 / D-030).
 
@@ -54,7 +57,8 @@ _(Index only — entries link to `/code/DECISIONS.md#d-xxx`. The ADR log is the 
 - D-027 — refresh-persona: skill shape & abort-on-missing-markers ([`../DECISIONS.md#d-027`](../DECISIONS.md))
 - D-028 — Project SPIRIT contract (CB-004) ([`../DECISIONS.md#d-028`](../DECISIONS.md))
 - D-029 — Wiki 2.0: workshop layer (CB-005) ([`../DECISIONS.md#d-029`](../DECISIONS.md))
-- D-030 — Wiki-aware skills (CB-006, pending implementation) ([`../DECISIONS.md#d-030`](../DECISIONS.md))
+- D-030 — Wiki-aware skills (CB-006) ([`../DECISIONS.md#d-030`](../DECISIONS.md))
+- D-031 — Bidirectional wiki reads (CB-007) ([`../DECISIONS.md#d-031`](../DECISIONS.md))
 
 ---
 

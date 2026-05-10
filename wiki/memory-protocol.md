@@ -36,6 +36,41 @@ Finished deliverables live in `/output/`. If a deliverable contains durable insi
 
 ---
 
+## Cross-wiki reads
+
+The two wikis (`/wiki/` and `/code/wiki/`) are read symmetrically. Cross-wiki **reads** are always sanctioned and need no handshake — only **writes** do (`promote-to-code` / `report-back`, per D-024).
+
+### Cadence
+
+- **Eager** (loaded into context every session): the local `index.md` **and** the sister `index.md`, when both are reachable.
+- **Lazy** (read on demand): everything else — sister `next.md`, `log.md`, `pages/`, `vision.md`, `goals.md`, `spirit-signals.md`, `backlog.md`, `ideation/`. Pull them in when the active question warrants.
+
+### Trigger table
+
+| Question signal | Local read | Sister read |
+|---|---|---|
+| "where are we?" / "what's next?" | local `next.md` (+ `goals.md` if present) | sister `next.md` |
+| "what's the vision?" / "why are we doing this?" | local `vision.md` (if present) | sister `vision.md` (if present) |
+| "any pending atmosphere signals?" | local `spirit-signals.md` (if present) | sister `spirit-signals.md` (if present) |
+| "what's in the backlog?" | local `backlog.md` (if present) | sister `backlog.md` (if present) |
+| "what shipped recently?" / "what's the latest?" | local `log.md` recent entries | sister `log.md` recent entries + recent `pages/` |
+| "implementation status of CB-XXX?" | local `log.md` for `brief` operations | sister `log.md` for `promote` / `close-brief` / `release` operations |
+| "what was the brief intent?" / "what was the ADR?" | — | sister `/output/briefs/CB-XXX.md` (frozen brief) and/or `/code/DECISIONS.md#d-yyy` |
+
+The table is a starting set, not exhaustive. Any cross-mode question consults the sister wiki when the answer is plausibly there.
+
+**Canonical artifacts** (`/output/briefs/`, `/code/DECISIONS.md`, `/code/SPIRIT.md`) sit outside the wiki and are reachable from either side. They are the authoritative cite for promoted scope, structural decisions, and project atmosphere respectively. The cross-reads protocol governs *wiki* reads; canonical artifacts are read on their own merits.
+
+### Synthesis rule
+
+When both wikis have relevant content, **return one synthesized answer citing both** — never "ideation says X, code says Y" segregated by source. The user thinks of one project, not two halves. Cite individual files in the answer (`[wiki/next.md]`, `[code/wiki/log.md]`) for traceability.
+
+### Sole-mount fallback
+
+If the sister wiki path doesn't resolve (Cowork standalone-mount of `/code/`, or an ideation-only project with no `/code/`), fall back silently to local-only. No warning, no error — same shape as the sparse-wiki fallback in D-030. Cross-mode questions that depend on the unreachable side are answered with what's available locally, plus a one-line note that the sister wiki isn't mounted.
+
+---
+
 ## Session Continuity
 
 Sessions are not atomic — work crosses day boundaries. Two artifacts carry state across the gap: `/wiki/log.md` (append-only history) and `/wiki/next.md` (single-file hand-off).

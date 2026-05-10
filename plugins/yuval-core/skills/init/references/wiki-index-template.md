@@ -4,6 +4,8 @@ The content catalog for this project's wiki. Read this first when answering any 
 
 > **Current next action:** see [next.md](next.md) — the single-file session hand-off, refreshed each session.
 
+> **Sister wiki (if the project has a code workspace):** [`../code/wiki/index.md`](../code/wiki/index.md) — consult for code-mode state (recent `log.md` entries, in-flight implementations, code-side ADRs). Protocol: [memory-protocol.md#cross-wiki-reads](memory-protocol.md#cross-wiki-reads).
+
 ---
 
 ## Generative layer

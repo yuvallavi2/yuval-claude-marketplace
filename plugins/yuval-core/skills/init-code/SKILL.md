@@ -112,6 +112,8 @@ The content catalog for this project's code wiki. Read this first when picking u
 
 > **Current next action:** see [next.md](next.md) — the single-file session hand-off, refreshed each session.
 
+> **Sister wiki:** [`../../wiki/index.md`](../../wiki/index.md) — consult for ideation-mode state (vision, current-phase goals, atmosphere signals, backlog, ideation files). Protocol: [memory-protocol.md#cross-wiki-reads](memory-protocol.md#cross-wiki-reads).
+
 ## Architecture
 _(High-level structure, module boundaries, data flow.)_
 

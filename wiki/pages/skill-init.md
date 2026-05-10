@@ -47,6 +47,10 @@ The skill now reads seven references at the start of each run: `claude-template.
 
 Both the `init` and the `template-sync` log entries gained a generative-layer line listing the per-file state (`created` / `already present`). The Step 7 confirmation surfaces the same.
 
+## What changed in v0.12.0 (CB-007, D-031)
+
+The `init` skill's bundled templates now emit the **bidirectional wiki reads** protocol. Three reference files updated: `memory-protocol.md` gains a `## Cross-wiki reads` section (cadence, symmetric trigger table, synthesis rule, sole-mount fallback); `wiki-index-template.md` gains a `## Sister wiki` pointer at the top; `claude-template.md` gains a one-line cross-ref under "Long-term memory protocol." Templates only — skill orchestration logic is unchanged. Re-running `init` on an existing project propagates the new protocol via the standard additive-merge path for `memory-protocol.md`; `index.md` is left alone (per the existing rule that the user-curated catalog and bundled headings interleave too freely for safe additive merge), so projects predating CB-007 add the sister-wiki pointer by hand if desired.
+
 ## Discipline preserved
 
 The CB-005 changes are **additive** — every existing contract still holds:

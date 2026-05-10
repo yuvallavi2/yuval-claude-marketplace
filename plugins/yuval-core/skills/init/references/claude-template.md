@@ -34,6 +34,8 @@ Always respect this structure — no exceptions.
 
 All rules for operating the wiki, session continuity, and the session hand-off live in `/wiki/memory-protocol.md`. Read that file at session start, before any wiki operation. It is the single source of truth for the memory protocol.
 
+If the project has a code workspace (`/code/`), the two wikis are read symmetrically — see [`/wiki/memory-protocol.md#cross-wiki-reads`](wiki/memory-protocol.md#cross-wiki-reads) for the protocol.
+
 ---
 
 ## Code workspace
